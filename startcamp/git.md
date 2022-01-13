@@ -146,3 +146,26 @@ Date:   Thu Jan 13 15:26:24 2022 +0900
 
 ---
 
+
+
+## github에 저장하기
+
+지금까지 로컬저장소에서 작업하였다. 만약 로컬에 있는 .git 폴더를 삭제하면 작업했던 모든 내용이 삭제된다. 우리는 원격 저장소(github, remote repository)를 연결하여 내용들을 관리하도록 한다. 
+
+### 로컬저장소에 있는 파일들 원격저장소에 업로드하기
+
+1. 원격저장소 정보등록 (url 정보)
+
+   ```
+   git remote add origin https://github.com/beeee2/TIL.git
+   ```
+
+   원격저장소를 추가한다. 마지막에 .git은 생략가능하다.
+
+   - git remote add [remote별명] [remote 주소]
+     - 해당 별명으로 해당 주소가 저장된다.
+   - origin은 컨벤션이다. 
+
+2. 로컬 내용을 원격 저장소로 push 한다. 
+   - `git push -u origin master`
+
