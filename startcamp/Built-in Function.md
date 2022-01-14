@@ -121,3 +121,36 @@ for obj in enumerate(data_list):
 
 ```
 
+
+
+#### filter()
+
+- 조건에 해당하는 항목을 걸러내는 함수
+
+- 첫 번째 매개변수는 전달받은 인자에 대해 **True 또는 False 반환**한다. 두 번째 매개변수에는 **반복가능한 자료형**을 인자로 넣어야 한다.
+
+  - 이 때 전달된 반복가능한 자료형의 인자가 첫 번째 매개변수의 인자로 전달된다. 
+
+  ``` python
+  def iseven(num):
+      return num % 2 == 0
+  
+  numbers = [1, 2, 3, 4, 5, 6,7, 8, 9, 10]
+  
+  ret_val = filter(iseven, numbers)
+  # ret_val = filter(lambda n: n % 2 == 0, numbers)
+  print("{0}".format(type(ret_val)))
+  print("{0}".format(list(ret_val)))
+  
+  [결과]
+  <class 'filter'> # 필터 객체 타입 반환
+  [2, 4, 6, 8, 10] # 필터 객체를 리스트로 변환
+  
+  
+  ```
+
+
+
+### list(), tuple(), set(), dict() 함수 알아보기
+
+이 네개의 함수는 반복 가능한 자료형을 인자로 전달 받아
