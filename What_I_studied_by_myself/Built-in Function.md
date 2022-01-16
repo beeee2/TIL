@@ -270,6 +270,143 @@ print("list(zip({0}, {1})) => {2}".format(data_list1, data_list2, list(zip(data_
 # 세 번째 항목들이 튜플로 묶여 세번째 항목을 만들어 zip 객체를 반환하는 list 객체를 만든다.
 # 출력결과 list(zip([1, 2, 3], [4, 5, 6])) => [(1, 4), (2, 5), (3, 6)]
 
-print("list(zip({0}, {1}, {2})) => {3}".format(data_list1, data_list2, list(zip(data_list1, data_list2))))
+print("list(zip({0}, {1}, {2})) => {3}".format(data_list1, data_list2, data_list3, list(zip(data_list1, data_list2, data_list3))))
+# 결과
+# list(zip([1, 2, 3], [4, 5, 6], ['a', 'b', 'c'])) => [(1, 4, 'a'), (2, 5, 'b'), (3, 6, 'c')]
+
+print("list(zip({0}, {1})) => {2}".format(data_list3, data_list1, dict(list(zip(data_list3, data_list1)))))
+# 결과
+# dict(zip(['a', 'b', 'c'],[1, 2, 3])) => {'a':1, 'b':2, 'c':3}
 ```
+
+
+
+## 변환함수
+
+- chr()
+  - **정수 형태의 유니코드 값**을 인자로 전달받아 **해당 코드의 문자**를 반환하는 함수
+- ord()
+  - **문자**를 인자로 전달받아 **유니코드 값(10진 정수)**을 반환하는 함수
+- hex()
+  - **10진 정수 값**을 인자로 전달 받아 **16진수로 변환된 값**을 반환하는 함수
+
+- int()
+
+  - 인자로 전달된 **숫자 형식의 문자열, 부동소수점 숫자**를 **정수**로 변환한 값을 반환하는 함수
+
+- float()
+
+  - 인자로 전달된 **숫자 형식의 문자열, 정수**를 **부동소수점 숫자**로 변환한 값을 반환하는 함수
+
+- str()
+
+  - 인자로 전달된 객체에 대한 **문자열 변환 값**을 반환하는 함수
+
+  
+
+## 객체 조사를 위한 함수
+
+- dir()
+  - 인자로 전달된 객체가 가지고 있는 변수, 메서드와 같은 **속성 정보를 리스트 객체로 반환**한다.
+  - 인자를 전달하지 않고 호출하면 현재 **지역 스코프에 대한 정보를 리스트 객체로 반환**한다.
+
+``` python
+print("dir() => {0}".format(dir()))
+# 인자 없이 전달된 dir은 지역스코프에 대한 정보를 리스트 객체로 반환한다. 
+
+data_str = "Hello, Python!"
+print("dir(data_str) => {0}".format(dir(data_str)))
+# 문자열이 가지고 있는 많은 메소드 정보를 리스트 객체에 담아 반환한다. 
+
+data_dict = {"key1":10, "key2":20, "key3":30}
+print("dir(data_dict) => {0}".format(dir(data_dict)))
+# 객체가 가지고 있는 메소드 정보들을 리스트 객체에 담아 반환한다.
+
+```
+
+
+
+- globals()
+  - 현재의 **전역 심볼 테이블**을 보여주는 **딕셔너리를 반환**하는 함수
+  - 이 함수가 반환한 값은 호출된 모듈이 아닌 현재 모듈에 대한 딕셔너리로 **현재 모듈에서 정의된 전역변수와 함수, 클래스의 정보를 포함**한다.
+
+- locals()
+  - 현재의 **지역 심볼 테이블**을 보여주는 **딕셔너리를 반환**하는 함수
+  - locals함수가 함수 블록내에서 호출될 때 반환 값 안에는 매개변수를 포함한 지역변수와 중첩함수의 정보를 포함한다.
+
+``` python
+class MyClass:
+    pass
+
+def test_fn(param):
+    def inner_fn():
+        pass
+    val1 = 5
+    val2 = 8
+    for item in locals.items(): #locals함수가 반환한 딕셔너리 객체에 대해 items 함수로 리스트 객체를 얻는다. 
+        # 이 리스트 객체는 키를 첫 번째 항목, 값을 두 번째 항목으로 갖는 튜플을 항목으로 하는 리스트 객체다.
+        print("\t{0} : {1}".format(item[0], item[1]))
+ # test_fn 함수는 inner_fn이라는 중첩함수를 가지고 있다. 
+
+value1 = 10
+value2 = 20
+obj1 = MyClass()
+
+g = dict(globals())
+
+print("globals()") # g의 items 함수로 반환된 리스트 객체를 얻는다. 
+
+```
+
+
+
+- id()
+  - 인자로 전달된 객체의 **고유 주소(참조 값)를 반환**하는 함수
+
+- isinstance()
+  - 첫 번째 인자로 전달된 객체가 두 번째 인자로 전달된 클래스의 **인스턴스인지에 대한 여부를 True/False로 반환**하는 함수
+
+- issubclass()
+  - 첫 번째 인자로 전달된 클래스가 두 번째 인자로 전달된 클래스의 **서브클래스인지에 대한 여부를 True/False로 반환**하는 함수
+
+
+
+## 실행 관련 함수
+
+- eval()
+  - 실행 가능한 표현식의 **문자열**을 인자로 전달받아 해당 **문자열의 표현식을 실행한 결과값**을 반환하는 함수
+
+``` python
+expr = "2 + 5 * 3"
+print("{0} => {1}".format(expr, eval(expr)))
+# 결과, 2 + 5 * 3 => 17
+
+expr = "'hellp, python!'.upper()"
+print("{0} => {1}".format(expr, eval(expr)))
+# 결과, 'hello, python!'.upper() => HELLO, PYTHON!
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
