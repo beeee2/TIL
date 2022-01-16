@@ -10,6 +10,6 @@
 
 ### Python grammar
 
-1. [내장함수](What_I_studied_by_myself/Built-in Function.md)
+1. [내장함수](What_I_studied_by_myself/Built-in_Function.md)
 2. [예외처리](What_I_studied_by_myself/Exception_handling.md)
 3. [모듈과_패키지](What_I_studied_by_myself/Module_and_package.md)
