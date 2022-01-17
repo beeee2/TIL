@@ -16,4 +16,5 @@
 4. [리스트와_튜플](What_I_studied_by_myself/List_and_Tuple.md)
 5. [셋과_딕셔너리](What_I_studied_by_myself/Set_and_Dictionary.md)
 6. [문자열](What_I_studied_by_myself/String.md)
+6. [객체지향](What_I_studied_by_myself/Object_oriented.md)
 
