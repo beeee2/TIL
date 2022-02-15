@@ -77,7 +77,7 @@ arr = [list(map(int, input().split())) for _ in range(N)]
 
 - 2차 배열의 한 좌표에서 4방향의 인접 배열 요소를 탐색하는 방법
 
-- 2차원 배열 더하기 (**질문**)
+- **2차원 배열 더하기 (질문)**
 
   ``` python
   N = int(input())
