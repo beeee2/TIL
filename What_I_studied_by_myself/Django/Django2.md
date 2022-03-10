@@ -85,6 +85,8 @@ Model
 
 "우리는 DB를 객체(object)로 조작하기 위해 ORM을 사용한다."
 
+- 장고 ORM 쿡북 활용하기
+
 
 
 ### models.py 작성
@@ -243,6 +245,17 @@ class Article(models.Model): # 상속받고 있다.
 
 - models.py 수정 후 makemigrations > migrate > DB 확인(새로고침 필요)
 
+---
+
+### DateField's options (중요)
+
+- **auto_now_add**
+  - **최초 생성 일자**
+  - Django ORM이 최초 inser시에만 현재 날짜와 시간으로 갱신(테이블에 어떤 값을 최초로 넣을 때)
+- **auto_now**
+  - **최종** 수정 일자
+  - Django ORM이 save할 때마다 현재 날짜와 시간으로 갱신
+
 
 
 ---
@@ -278,7 +291,7 @@ https://docs.djangoproject.com/en/4.0/ref/models/querysets/
 
 - Manager
   - Django 모델에 데이터베이스 query 작업이 제공되는 인터페이스
-  - 기본적으로 모든 Django 모델 클래스에 objects라는 Manager를 추가한다.
+  - 기본적으로 모든 Django 모델 클래스에 **objects**라는 Manager를 추가한다.
 - QuerySet
   - 데이터베이스로부터 잔달받은 객체 목록
   - queryset 안의 객체는 0개 , 1개 혹은 여러 개 일 수 있음
@@ -289,8 +302,8 @@ https://docs.djangoproject.com/en/4.0/ref/models/querysets/
 ### Django Shell
 
 - 일반 Python shell을 통해서는 장고 프로젝트 환경에 접근할 수 없음
-- 그래서 장고 프로젝트 설정이 load된 Python shell을 활용해 DB API구문 테스트 진행
-- 기본 Django shell보다 더 많은 기능을 제공하는 shell_plus를 사용해서 진행
+- 그래서 **장고 프로젝트 설정이 load**된 Python shell(장고 프로젝트가 설정 load 된 것을 Django shell)을 활용해 DB API구문 테스트 진행
+- 기본 **Django shell**보다 더 많은 기능을 제공하는 shell_plus를 사용해서 진행
 
 ![image-20220308135103003](Django2.assets/image-20220308135103003.png)
 
@@ -330,9 +343,17 @@ https://django-extensions.readthedocs.io/en/latest/
 
 ### get() 
 
+- 한 개의 데이터만 조회할 때 사용한다.
 - get() 객체를 찾을 수 없으면 예외를 발생시킨다. (아래참고)
+- 객체가 두 개 이상이면 MultipleObjectsReturned 예외를 발생시킨다.
 
 ![image-20220308152211711](Django2.assets/image-20220308152211711.png)
+
+
+
+### all()
+
+- 현재 QuerySet의 복사본을 반환한다.
 
 
 
@@ -360,7 +381,45 @@ https://django-extensions.readthedocs.io/en/latest/
 
 
 
+### Create
 
+1. 인스턴스 생성 후 인스턴스 변수설정
+   - save()를 반드시 호출주어야 DB에 저장된다.
+2. 초기 값과 함께 인스턴스 생성
+   - save()를 반드시 호출주어야 DB에 저장된다.
+3. QuerySetAPI - create() 사용
+   - DB API인 create()메서드를 사용한다.
+   - save() 호출하지 않아도 DB에 저장된다.
+   - 유효성 검사(validation)가 필요하므로 instance를 생성해서 확인하는 것으로 한다.
+
+
+
+### str method
+
+- 표준 파이썬 클래스의 메소드인 str()을 정의하여 각각의 object가 사람이 읽을 수 있는 문자열을 반환(return)하도록 할 수 있다. 작성 후 반드시 shell_plus를 재시작해야 반영된다.
+
+- print할 때 나오는 형태를 지정한다.
+
+- self를 첫번째 인자로가진다.
+
+  ``` python
+  def __str__(self):
+      reutnr set.title
+  ```
+
+
+
+### Field lookups
+
+- 조회시 특정 검색 조건을 지정
+- 사용 예시 
+  - Article.objects.filter(pk__gt=2)
+
+
+
+### QuerySet API
+
+- 데이터베이스 조작을 위한 다양한 QuerySet API methods는 해당 공식문서를 반드시 참고하여 학습할 것
 
 
 
@@ -373,7 +432,11 @@ https://django-extensions.readthedocs.io/en/latest/
 ### Automatic admin interface
 
 - 사용자가 아닌 서버의 관리자가 활용하기 위한 페이지
-- Model class를 admin.py에 등록하고 관리
+- **Model class를 admin.py에 등록**하고 **관리**
 - django.contrib.auth 모듈에서 제공됨
 - record 생성 여부 확인에 매우 유용하며, 직접 record를 삽입할 수도 있음
+
+- **admin 생성 및 등록에 어디서 어떻게 해야하는 지 암기해야 할것 (중요)**
+
+---
 
