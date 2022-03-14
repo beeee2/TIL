@@ -134,6 +134,53 @@
 
 ---
 
+## 📚 테이블 생성 및 삭제
+
+``` bash
+$ sqlite3 tutorial.sqlite3
+sqlite > .database
+```
+
+에서 '.'은 sqlite 프로그램의 기능을 실행하는 것이다.
+
+### 데이터베이스 생성
+
+``` bash
+hyunbee@LAPTOP-VQFRJFAR MINGW64 ~/ssafy7/webex_student/db
+$ sql3 example.sqlite3
+SQLite version 3.38.1 2022-03-12 13:37:29
+Enter ".help" for usage hints.
+sqlite>.database
+main: C:\Users\hyunbee\ssafy7\webex_student\db\example.sqlite3 r/w
+```
+
+
+
+### csv 파일을 table로 만들기
+
+``` bash
+sqlite> .mode csv
+sqlite> .import hellodb.csv examples
+sqlite> .tables
+examples
+sqlite>
+```
+
+- .mode는 ouput을 설정하는 명령어다.
+- output을 csv파일로 설정한다. (csv파일을 불러올 때 모드설정을 필수로 해주어야 한다.)
+- import 시킬 때 생성할 테이블 명으로 examples를 기재하였다.
+- .table 해당 테이블이 생성된다.
+
+
+
+
+
+
+
+
+
+---
+
 # 📚 CREATE
 
 ## 📕 CTEATE
@@ -224,3 +271,80 @@ INSERT INTO 테이블이름(컬럼1, 컬럼2, ...) VALUES (값1, 값2, ,,,);
 - SET clause에서 테이블의 각 열에 대해 새로운 값을 설정한다.
 
 - 중복 불가능한 값인 rowid를 기준으로 수정하자
+
+
+
+---
+
+
+
+## 📗 SQLite Aggregate Functions
+
+### Aggregate function
+
+- 집계 함수
+- 값 집합에 대한 계산을 수행하고 단일 값을 반환한다.
+  - 여러 행으로부터 하나의 결과값을 반환한다. 
+- SELECT 구문에서만 사용된다.
+- 예시
+  - 테이블 전체 행 수를 구하는 COUNT(*)
+  - age 컬럼 전체 평균 값을 구하는 AVG(Age)
+
+
+
+- AVG, SUM, MIN, MAX
+  - 해당 컬럼이 숫자(정수)일 때만 사용가능하다.
+
+
+
+---
+
+## 📗 LIKE
+
+### LIKE operator
+
+- query data based on pattern matching
+- 패턴 일치를 기반으로 데이터를 조회하는 방법
+- SQLite는 패턴 구성을 위한 2개의 wildcards를 제공한다.
+  - % (percent sign)
+    - 0 개 이상의 문자
+  - _ (underscore)
+    - 임의의 단일 문자
+
+
+
+---
+
+## 📗 ORDER BY
+
+### Order by clause
+
+#### ORDER BY
+
+- sort a result set of a query
+- 조회 결과 집합을 정렬
+- SELECT 문에 추가하여 사용한다.
+- 정렬 순서를 위한 2개의 key word를 제공한다.
+  - ASC - 오름차순(default)
+  - DESC - 내림차순
+
+
+
+
+
+---
+
+## 📗 ORDER BY
+
+### GROUP by clause
+
+#### GROUP BY
+
+- 행 집합에서 요약행 집합을 만든다.
+- select문의 optional절
+- 선택된 행 그룹을 하나 이상의 열 값으로 요약 행으로 만든다.
+- 문장에 WHERE 절이 포함된 경우 반드시 WHERE 절 뒤에 작성해야 한다.
+
+
+
+---
