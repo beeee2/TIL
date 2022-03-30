@@ -43,3 +43,42 @@ def checknode(V):						# node
                 checknode(u)
 ```
 
+
+
+``` python
+# 수도코드
+backtrack(a[], k, input):	
+    c[MAXCANDIDATES]					# 후보군을 저장할 배열
+    ncands								# 후보의 수(len으로 구한 값)
+    
+    IF k == input: process_solution(a[], k)	# 내가 원하는 갯수만큼 후보군이 채워졌으면,
+        # process_solution 함수에서 원하는 값을 찾으라는 의미
+    ELSE:
+        k ++
+        make_candidates(a[], k, input, c[], ncands)	# 후보를 추천해주는 함수
+        # a는 추천한 후보에 대해 결정한 결과
+        # 현재선택한 개수 k
+        # 추천한 후보군을 c에 넣는다.
+        # 후보군의 개수 ncands
+        FOR i in 0 -> ncands - 1
+        	a[k] <- c[i]
+            backtrack(a, k, input)	# 다음 번 후보를 고르러 이동한다.
+main()
+	a[MAX]			# powerset을 저장할 배열
+    backtrack(a[], 0, 3) # 3개의 원소를 가지는 powerset
+
+
+make_candidates(a[], k, n, c[], ncands):
+    c[0] <- TRUE
+    c[1] <- FALSE
+    ncands <- 2
+    
+process_solution(a[], k)
+	FOR i in 1 -> k:
+       IF a[i] == TRUE : print(i)
+```
+
+
+
+#### 백트래킹을 이용하여 순열 구하기
+
