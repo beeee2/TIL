@@ -25,13 +25,13 @@
 ### DFS를 이용한 문제 유형
 
 - 특정 지점을 시작으로 DFS를 돌렸다면 시작한 노드와 연결관계에 있는 요소들을 방문처리할 수 있다.
-- 's에서 e를 갈 수 있는가'
+- '**s에서 e를 갈 수 있는가**'
   - s에서 DFS 돌린 후 e가 방문처리 되어 있는지 확인한다.
-- 's가 포함된 연결요소의 크기'
+- **'s가 포함된 연결요소의 크기'**
   - s에서 DFS 돌린 후 방문처리된 노드의 개수를 구하면 된다.
   - 관련 문제
     - 바이러스(백준)
-- '연결요소의 개수 세기'
+- **'연결요소의 개수 세기'**
   - 방문처리가 안 된 노드를 구할 때마다 COUNT 후 DFS 돌리기
 
 
@@ -41,7 +41,8 @@
 - 그래프의 연결 정보를 저장할 2차원 리스트를 생성한다.
 - 방문 여부를 확인할 리스트를 생성한다.
 
-	#### 바이러스(백준)
+
+#### 바이러스(백준)
 
 ``` python
 n = int(input())
@@ -56,25 +57,53 @@ for i in range(m):
     v[b].append(a)			# b에서 갈 수 있는 노드로 a가 생겼다.
     
 visited = [False for i in range(n+1)]
-cnt = 0
 
 def dfs(cur):
-    global cnt
+    cnt = 1
     visited[cur] = True		# 현재 노드 방문처리
     cnt += 1
     
     for nxt in v[cur]: 
         if visited[nxt]:
             continue
-        dfs(nxt)
+        cnt += dfs(nxt)
+        	
+    return cnt
         
         
-dfs(1)
-
-print(cnt - 1)
+print(dfs(1))
 ```
 
-- 29:42초 이어서
+
+
+#### 연결요소의 개수
+
+``` python
+def dfs(cur):
+    visited[cur] = True
+
+    for nxt in graph[cur]:
+        if visited[nxt]:
+            continue
+
+        dfs(nxt)
+
+N, M = map(int, input().split())
+graph = [[] for _ in range(N+1)]
+visited = [False for _ in range(N+1)]
+cnt = 0
+for _ in range(M):
+    a, b = map(int, input().split())
+    graph[a].append(b)
+    graph[b].append(a)
+
+for i in range(1, N+1):
+    if not visited[i]:
+        cnt += 1
+        dfs(i)
+
+print(cnt)
+```
 
 
 
