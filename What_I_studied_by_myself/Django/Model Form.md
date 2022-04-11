@@ -151,6 +151,12 @@ class Article(modles.Model):
 
 ## Model Form
 
+### ModelForm 선언하기
+
+- Meta 클래스 생성ㅅ
+
+
+
 
 
 ## Rendering fields manually
