@@ -190,17 +190,424 @@ $python manage.py createsuperuser
 
 ### Comment CREATE
 
+#### CommentForm 작성
+
+``` python
+# articles/forms.py
+from .models import Article, Comment
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+```
+
+#### detail 페이지에서 CommentForm 출력
+
+``` python
+from .forms import ArticleForm, CommentForm
+
+@require_safe
+def detail(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    comment_form = CommentForm()
+    context = {
+        'article' : article,
+        'comment_form' : comment_form,
+    }
+    return render(request, 'articles/detail.html', context)
+```
+
+``` django
+<!-- articles/detail.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ... ->
+<a href="{% url 'articles:index' %}">back</a>
+<hr>
+<form action="" method="POST">
+	{% csrf_token %}
+	{{ comment_form }}
+	<input type="submit">
+</form>
+{% endblock %}
+
+```
+
+- 두 번째 글에 댓글을 달고 싶은데 그냥 위와 같이 작성했을 때 detail  페이지에서 어느 게시물에 댓글을 작성할 지 선택할 수 있다. 이상하다. 필드 출력을 수정할 필요가 있다.
+
+``` python
+# articles/forms.py
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        exclude = ('articles',)
+        # 사용자로부터 외래키의 값을 전달 받지 않기 때문에 이를 제외한다.
+        # 이렇게 되면 views.py에서 별도로 article을 받아줘야 한다.
+```
+
+#### 댓글 작성 로직
+
+``` python
+# articles/urls.py
+
+app_name = 'articles'
+urlpatterns = [
+    # ...
+    path('<int:pk>/comments/', views.comments_create, name='comments_create'),
+] # 어떤 게시글에 작성되어야 하는 지 알아야하기때문에 게시글의 pk값이 필요하다.
+```
+
+``` django
+<!-- articles/detail.html -->
+<form action="{% url 'articles:comments_create' article.pk %}" method="POST">
+    {% csrf_token %}
+    {{comment_form}}
+    <input type="submit">
+</form>
+```
+
+``` python
+# articles/views.py
+
+@require_POST
+def comments_create(request, pk):
+    if request.user.is_authenticated:
+        article = get_object_or_404(Article, pk=pk)
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            # commit=False, 두 번의 save가 가능한 이유
+            # commit의 기본 값은 True였다. 
+            # commit을 실제 데이터베이스의 저장은 하지 않고 instance만 생성되게 한다.
+            comment.article = article
+            # 조회한 article의 값을 넣어줘야 한다.
+            comment.save()
+        return redirect('articles:detail', article.pk)
+    return redirect('accounts:login')
+
+
+```
+
+
+
+#### The 'save()' method
+
+- save(commit=False)
+  - Create, but don't save the new instance
+  - 아직 **데이터베이스에 저장되지 않은 인스턴스**를 반환
+  - 저장하기 전에 **객체에 대한 사용자 지정 처리를 수행할 때 유용**하게 사용한다.
+  - commit의 기본값은 True
+  - commit은 ModelForm의 메서드(상속받았기 때문이다.)
+
+
+
+
+
 ### Comment READ
+
+#### 댓글 조회
+
+``` python
+@require_safe
+def detail(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    comment_form = CommentForm()
+    # 조회한 article의 모든 댓글을 조회(역참조)
+    comments = article.comment_set.all()
+    context = [
+        'artlcle' : article,
+        'comment_form' : comment_form,
+        'comments' : commtens,
+    ]
+    return render(request, 'articles:detail.html', context)
+```
+
+``` html
+<h4>
+    댓글 목록
+</h4>
+{% for comment in comments %}
+	<li>{{comment.content}}</li>
+{% endfor %}
+```
+
+
+
+
 
 ### Comment DELETE
 
+#### 댓글 삭제
 
+``` python
+# articles > urls.py
+urlpatterns = [
+    # ...
+    path('<int:article_pk>/comments/<int:comment_pk>/delete', views.comment_delete, name='comment_delete')
+]
+```
+
+``` python
+# articles > views.py
+@require_POST
+def comment_delete(request, article_pk , comment_pk): # article_pk를 variable routing으로 받아서 사용가능
+    if request.user.is_authenticated:
+        comment = get_object_or_404(Commen, pk=comment_pk)
+        # article = comment.article.pk, 참조해서 얻을 수 있고 return의 두번째 인자로 쓸 수 있다.
+        comment.delete()
+    return redirect('articles:detail', article_pk)
+        # URL 구조의 일관성과 통일성을 위해서 
+       
+```
+
+``` html
+
+{% for comment in comments %}
+<li>
+	{{comment.content}}
+    <form action="{% url 'articles:comment_delete' article.pk comment.pk%}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="삭제">
+    </form>
+</li>
+{% endfor %}
+```
+
+
+
+### Comment 추가사항
+
+#### 댓글 개수 출력하기
+
+``` html
+<h4>
+    댓글 목록
+</h4>
+{% if comments %}
+	<p>
+        <b>{{comments|length}}개의 댓글이 있습니다.</b>
+</p>
+{% endif %}
+```
+
+- {{comments:|length}}
+- {{article.comment_sel.all|length}}
+- {{comments.count}}
+
+#### 댓글이 없는 경우 대체 컨텐츠 출력(DTL의 for-empty 태그 활용)
+
+``` html
+<ul>
+    {% for comment in comments%}
+    	<li>
+    		{{comment.content}}
+            <form action=""{% url 'articles:comment_delete' article.pk comment.pk %}"" method="POST" class="d-nline">
+                {% csrf_tocken %}
+                <input type="submit" value="DELETE">
+            </form>
+    	</li>
+    {% empty %}
+    	<p>
+            댓글이 없습니다.
+    </p>
+    {% endfor %}
+</ul>
+```
+
+
+
+
+
+
+
+---
 
 ## ✅ Customizing authentication in Django
 
 ### Substituting a custom User model
 
+#### User 모델 대체하기
+
+- 일부 모델에서는 Django의 내장 User 모델이 제공하는 인증 요구사항이 적절하지 않을 수 있다.
+  - ex) username 대신 email을 식별 토큰으로 사용하는 것이 더 적합한 사이트
+- Django는 User를 참조하는데 사용하는 AUTH_USER_MODEL값을 제공하여, default user model을 재정의(override)할  수 있도록 한다
+- Djanggo는 새 프로젝트를 시작하는 경우 기본 사용자 모델이 충분하더라도, 커스텀 유저 모델을 설정하는 것을 강력하게 권항
+  - 단, 프로젝트의 모든 migrations 혹은 첫 migrate를 실행하기 전에 이 작업을 마쳐야 한다.
+
+
+
+#### AUTH_USER_MODEL
+
+- User를 나타내는데 사용하는 모델
+- 프로젝트가 진행되는 동안 변경할 수 없음
+- 프로젝트 시작 시 설정하기 위한 것이며 참조하는 모델은 첫번째마이그레이션에서 사용할 수 있어야 한다.
+- 기본 값 : 'auth.User' (auth앱의 User 모델)
+
+
+
+- [참고] 프로젝트 중간(mid-project)에 AUTH_USER_MODEL 변경하기
+  - 모델 관계에 영향을 미치기 때문에 훨씬 더 어려운 작업이 필요
+  - 즉, 중간 변경은 권장하지 않으므로 초기에 설정하는 것을 권장
+
+
+
+#### Custom User 모델 정의하기
+
+- 관리자 권한과 함께 완전한 기능을 갖춘 User 모델을 구현하는 기본 클래스인 AbstractUser를 상속받아 새로운 User 모델 작성
+
+``` python
+# accounts/models.py
+
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    pass
+```
+
+- settings.py에 수정(우리가 커스텀한 유저 클래스로 변경)
+
+``` python
+AUTH_USER_MODEL = 'accounts.User'
+```
+
+- 프로젝트 중간에 진행했기 때문에 데이터베이스를 초기화 한 후 마이그레이션을 진행
+
+  - 초기화 방법
+
+    1. db.sqlite3 파일 삭제
+
+    2. migrtaions 파일을 모두 삭제(파일명에 숫자가 붙은 파일만 삭제)
+
+       ``` bash
+       $ python manage.py makemigrations
+       $ python manage.py migrate
+       ```
+
+- admin 페이지에서 사용자(들) 항목(회원정보)이 사라졌다. 새로운 User로 대체하면서 빠지게 되었다.
+
+  - 해결방법, 장고문서참조, substituting-a-custom-user-model
+
+  ``` python
+  # articles/admin.py
+  
+  from django.contrib import admin
+  from django.contrib.auth.admin import UserAdmin
+  from .models import User
+  
+  admin.site.register(User, UserAdmin)
+  ```
+
+  
+
+
+
+
+
+
+
 ### Custom user & Built-in auth forms
 
+- User 모델이 빠지면서 어디선가 어긋나는 부분이 생길것이다
+
+1. 회원가입 시도 후 아래와 같은 에러 발생 :
+   - AttributeError at /accounts/signup
+   - 회원가입에서 사용하는 폼은 UserCreationForm -> ModelForm,-> 클래스 메타 정도가 있음 -> 모델이 작성되어 있다.  
+   - UserCretaionForm과 UserChangeForm은 기존 내장 User 모델을 사용한 ModelForm이기 때문에 커스텀 User 모델로 대체해야 한다.
 
 
+
+#### Custom Built-in Auth Forms(1/2)
+
+기존 User 모델을 사용하기 때문에 커스텀 User모델로 다시 작성하거나 확장해야 하는 forms
+
+- UserCreationForm
+- UserChangeForm
+
+``` python
+# accounts/forms.py
+import django.contrib.auth.forms import UserChangeForm,UserCreationForm
+from django.contrib.auth import get_user_model
+# 현재 장고모델에 활성화된 유저 모델을 리턴한다.
+# 유저는 직접 참조하지않는다.
+# 단순 유저모델을 돌려주는게 아니라 현재 장고 프로젝트에 활성화된 유저모델을 리턴한다.
+
+class CustomUserChangeForm(userChangeForm):
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'first_name', 'last_name')
+        
+class CustomUserCreationForm(UserCreationForm): 
+    class Meta:
+        model = get_user_model()
+```
+
+#### Custom Built-in Auth Forms(2/2)
+
+- 이처럼 커스텀 User 모델이 AbstractUser의 하위 클래스인 경우 다음과 같은 방식으로 form을 확장
+
+  ``` python
+  from django.contrib.auth.forms import UserCreationForm
+  from myapp.models import CustomUser
+  
+  class CustomUserCreationForm(UserCreationForm):
+      class Meta(UserCreationForm, Meta):
+          model = CustomUser
+          fields = UserCreationForm.Meta.fields + ('custom_field',)
+  ```
+
+  ``` python
+  from django.contrib.auth.forms import UserChangeForm, useCreationForm
+  
+  class CustomuserCreationForm(UserCreationForm):
+      class Meta(UserCreationForm.meta):
+          model = get_user_model()
+          fields = UserCreationsForm.Meta.fields + ('email',)
+  ```
+
+
+
+#### get_user_model()
+
+- 현재 프로젝트에서 활성화된 사용자 모델을 반환
+  - User 모델을 커스터마이징한 상황에서는 Custom User모델을 반한다.
+- 이 때문에 Django는 User 클래스를 직접 참조하는 대신 django.contrib.auth.get_user_model()을 사용하여 참조해야 한다고 강조
+
+
+
+
+
+
+
+## User - Article
+
+### 1:N 관계설정 : User-Article
+
+- 사용자는 여러 개의 게시글을 작성할 수 있다
+
+- Article이 N, 1이 1이다.
+
+``` python
+# articles/models.py
+from django.db import models
+from django.conf import settings
+
+class Article(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=10)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title
+```
+
+- settings.py에 AUTH_USER_MODEL = 'accounts.User'
+
+
+
+### 1:N 관계설정 : User-Comment
