@@ -606,8 +606,91 @@ class Article(models.Model):
         return self.title
 ```
 
+- 외래키 변수명은 1:N관계에서 참조하는 모델이름의 소문자 단수형.
 - settings.py에 AUTH_USER_MODEL = 'accounts.User'
+- 외래키 user의 첫번째 인자로 User를 사용하면 안된다.(직접 키 참조 금지)
+  - 간접적으로 user값을 리턴받아서 제공해야한다. get_user_model()또한 사용할 수 없다. 모델에서의 참조로 함수는 불가능하기 때문이다.
+
+
+
+#### User 모델을 참조하는 방법
+
+1. settings.AUTH_USER_MODEL
+
+- return 값으로 문자열을 반환한다.
+- User  모델에 대한 외래 키 또는 다대다 관계를 정의할 때 사용해야 한다.
+- models.py에서 User모델을 참조할 때 사용한다.
+
+2. get_user_model()
+
+- return 값으로 object를 반환한다.
+
+- 현재 활성화(active)된 User 모델을 반환한다.
+  - 커스터마이징한 User 모델이 있을 경우는 Custom User 모델을, 그렇지 않으면 User를 반환한다.
+  - User를 직접 참조하지 않는 이유
+- models.py가 아닌 다른 모든 곳에서 유저 모델을 참조할 때 사용
+
+#### User 모델에 대한 정리
+
+- **models.py에서는 settings.AUTH_USER_MODEL**
+- **models.py를 제외한 다른 모든 곳은 get_user_model()**
+
+
 
 
 
 ### 1:N 관계설정 : User-Comment
+
+1. User와 Comment 간 모델 관계 정의 후 migrtaion
+
+``` python
+#articles/models.py
+class Comment(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
+
+```
+
+
+
+2. User와 Comment 간 모델 관계 정의 후 migration
+
+   - nulll 값이 허용되지 않는 user_id 필드가 별도의 값 없이 comment에추가되려 하기 때문이다.
+
+   - 1을 입력 후 enter, 현재 화면에서 기본 값을 설정하겠다는 의미
+
+   - 1을 입력 후 enter,
+
+     기존 테이블에 추가되는 user_id 필드의 값을 1로 설정하겠다는 의미로 기존 댓글의 작성자가 모두 1번 user가 된다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
