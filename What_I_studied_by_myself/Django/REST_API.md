@@ -7,7 +7,7 @@
 - HyperText Transfer Protocol
 - 웹 상에서 컨텐츠를 전송하기 위한 약속
 - HTML 문서와 같은 리소스들을 가져올 수 있도록 하는 프로토콜(규칙, 약속)
-- 웹에서 이루어지는 모든 데이터 교환의 기초
+- 웹에서 이루어지는 모든 데이터 교환의 기초_
   - 요청(request)
     - 클라이언트에 의해 전송되는 메세지
   - 응답(response)
@@ -227,7 +227,7 @@
 
 
 
-
+#### bash창 
 
 ``` bash
 pip install django-extensionds
@@ -251,6 +251,17 @@ pip freeze > requirements.txt
 
 - migrate 하기 (DB 생성)
 
+#### bash
+
+``` bash
+pip install psycopg2
+python psycopg2 seed articles --number=20
+python manage.py createsuperuser
+```
+
+- 장고 seed는 article 정보를 이용해서 값들을 랜덤하게 넣어준다. 
+
+- createsuperuser
 
 
 
@@ -276,12 +287,177 @@ pip freeze > requirements.txt
 
 
 
+
+
+---
 
 
 
 ## 🥔 Response
 
+- HTML 파일(문서) 대신 JSON 파일을 사용자에게 보여줄 것이다.
+- JSON 문서를 주는 RESTfull한 API 서버를 만들어볼 예정.
+- 'JSON형태로 게시물을 어떻게 응답할 수 있을까'
+
+#### Init Project
+
+- 제공된 00_JSON_response 프로젝트로 진행
+- 가상환경 설정 및 패키지 설치
+
+``` bash
+python manage.py seed articles --number=20
+# 데이터 20개를 넣는다.
+# DB에서 확인이 가능하다.
+```
+
+- return에 JsonResponse라는 함수를 호출하고 있다. (from django.http.response import JsonResponse)
+
+
+
+#### Response - JsonResponse
+
+- Content-Type , entity header
+  - 데이터의 media type(MIME type, content type)을 나타내기 위해 사용됨
+  - 응답 내에 있는 컨텐츠의 컨텐츠 유형이 실제로 무엇인지 클라이언트에게 알려준다.
+
+
+
+#### JsonResponse ojbects
+
+- JSON-encoded response를 만드는 HttpResponse의 서브 클래스
+
+- "JSON"으로 인코딩된 객체를 준다(핵심)
+
+- "safe" parameter
+
+  - True(기본값)
+
+  - dict 이외의 객체를 **직렬화(Serialization)**하려면 False로 설정해야 한다.
+
+    ``` python
+    response = JsonResponse({'foo':'bar'})
+    response = JsonResponse([1, 2, 3], safe=False)
+    ```
+
+    
+
+#### Serialization
+
+- '직렬화'
+
+- 데이터 구조나 객체 상태를 동일하거나 다른 컴퓨터 환경에 저장하고, 나중에 재구성할 수 있는 포맷으로 변환하는 과정
+
+
+
+- Serializers in Django
+  - Queryset 및 Model Instance와 같은 복잡한 데이터를 JSON, XML 등의 유형으로 쉽게 변환할 수 있는 Python 데이터 타입으로 만들어줌.
+
+- Django의 내장 HttpResponse를 활용한 JSON 응답
+
+  ```python
+  def article_json_2(request):
+      articles = Article.objects.all()
+      data = seializers.serialize('json', articles)
+      return HttpResponse(data, content_type='application/json')
+  ```
+
+  - articles는 쿼리셋으로 json으로 변환하기 위해 serializers(내장 모듈)를 이용하여 직렬화 시킨다
+  - 응답시 content_type은 'application/json'이다.
+  - from django.core import serializers
+
+- Django의 내장 HttpResponse를 활용한 JSON 응답 객체
+- 주어진 모델 정보를 활용하기 때문에 이전과 달리 필드를 개별적으로  직접 만들어 줄 필요 없음(딕셔너리를 만들지 않았음)
+  - model, pk, fields라는 세개의 키 값이 따로 분리되서 보인다.
+
+- **Django REST framework(DRF)** 라이브러리를 사용한 JSON 응답
+
+  - rest한 서버를 만들기 위해 라이브러리를 제공해준다.
+  - 장고로 API 서버를 짤 때 무조건 사용하는 라이브러리다.
+
+- 설치과정확인
+
+  ```bash
+  $ pip install djangorestframework
+  ```
+
+  ```python
+  # settings.py
+  
+  INSTALLED_APPS = [
+      #,,,
+      'rest_framework',
+  ]
+  ```
+
+  ``` python
+  @api_view()
+  def article_json_3(request):
+      articles = Article.objects.all()
+      serializer = ArticleSerializer(articles, many=True)
+      return Response(serializer.data)
+  ```
+
+  - **ArticleSerializer** 클래스 
+
+    - from .serializers import ArticleSerializer (serializers 모듈안에 있는 클래스)
+
+  - serializers.py 살펴보기
+
+    ``` python
+    from rest_framework import serializers
+    from .models import Article
+    
+    class ArticleSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Article
+            fields = '__all__'
+    ```
+
+    - DRF라이브러리가 장고에서 기본적으로 사용하는 모델폼의 구조와 똑같이 맞춰놓은것 
+
+      
+
+
+
+
+
+
+
 ## 🥔 Single Model
+
+** 서버에서 JSON을 만들어 주는 것 ** 
+
+#### DRF with Single Model
+
+- 단일 모델의 data를 직렬화(serialization)하여 JSON으로 변환하는 방법에 대한 학습
+- 단일 모델을 두고 CRUD 로직을 수행 가능하도록 설계
+- API 개발을 위한 핵심 기능을 제공하는 도구 활용
+  - DRF built-in form
+  - Postman - 요청과 응답을 포트스맨을 사용할 것이다. 
+
+
+
+#### [참고] Postman
+
+- API를 구축하고 사용하기 위해 여러 도구를 제공하는 API 플래솜
+- 설계, 테스트, 문서화 등의 도구를 제공함으로써 API를 더 빠르게 개발 및 생성할 수 있도록 돕는다.
+
+
+
+#### ModelSerializer
+
+- 모델 필드에 해당하는 필드가 있는 Serializer 클래스를 자동으로 만들 수 있는 shortcut
+- 아래 핵심 기능을 제공한다.
+  1. 모델 정보에 맞춰 자동으로 필드 생성
+  2. serilaizer에 대한 유효성 검사기를 자동으로 생성
+  3. .create() & .update()의 간단한 기본 구현이 포함됨
+
+- Model의 필드를 어떻게 '직렬화'할 지 설정하는 것이 핵심
+- 이 과정은 Django에서 Model의 필드를 설정하는 것과 동일하다.
+
+
+
+
 
 ## 🥔1:N Relation
 
