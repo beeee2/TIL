@@ -1,4 +1,4 @@
-Model
+# Model
 
 ### Model
 
@@ -94,15 +94,16 @@ Model
 ```python
 class Article(models.Model): # 상속받고 있다.
     title = models.CharField(max_length = 10)
-    constend = models.TextField()
+    content0 = models.TextField()
 ```
 
-
+- 클래스 형태로 작성
 
 - DB컬럼과 어떠한 타입으로 정의할 것인지에 대해 django.db라는 모듈의 models를 상속
   - 각 모델은 django.db.models.Model 클래스의 서브 클래스로 표현
 - title과 content은 모델의 필드를 나타낸다.
   - 각 필드는 클래스 속성으로 정의되어 있으며, 각 속성은 각 데이터베이스의 열에 매핑된다.
+- id는 별도로 작성하지 않는다. 장고가 알아서 작성해준다.
 
 
 

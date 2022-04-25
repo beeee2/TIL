@@ -1,3 +1,5 @@
+
+
 # Review
 
 ``` python
@@ -143,20 +145,169 @@ class Article(modles.Model):
 
 # Model Form
 
-## Django Form Class
+### Intro
 
-
+- Django Form을 사용하다보면 Model에 정의한 필드를 유저로 부터 입력받기 위해 Form에서 Model 필드를 재정의 하는 행위가 중복될 수 잇다.
+- 그래서 Django는 **Model을 통해 Form 클래스**를 만들 수 있는 **ModelForm**이라는 Helper를 제공한다.
 
 
 
 ## Model Form
 
+- **Model**을 통해 **Form Class를 만들 수 있는** Helper
+- 일반 Form Class와 완전히 같은 방식(객체 생성)으로 view에서 사용가능
+
+
+
 ### ModelForm 선언하기
 
-- Meta 클래스 생성ㅅ
+```python
+#articles/forms.py
+
+from django import forms
+from .models import Article
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = '__all__'
+       # exclude = ('users',)
+```
+
+- Meta라는 클래스를 작성한다.
+- forms 라이브러리에서 파생된 ModelForm 클래스를 상속받는다.
+- 정의한 클래스 안에 **Meta 클래스**를 선언하고, **어떤 모델을 기반**으로 Form을 작성할 것인지에 대한 정보를 Meta 클래스에 지정한다.
 
 
 
+### Meta Class
+
+- Model의 정보를 작성하는 곳
+- ModelForm을 사용하는 경우 사용할 모델이 있어야 하는데 Meta Class가 이를 구성한다.
+  - 해당 Model에 정의한 field 정보를 Form에 적용하기 위함이다
 
 
-## Rendering fields manually
+
+### ModelForm이 쉽게 해주는 것
+
+- 모델필드 속성에 맞는 HTML element 표현
+- 이를 통해 받은 데이터를 View함수에서 유효성 검사를 할 수 있도록 한다.
+
+
+
+---
+
+
+
+#### Create view 수정
+
+``` python
+# articles/views.py
+
+def create(request):
+    form = ArticleForm(request.POST)
+    if form.is_valid():
+        article = form.save()
+        return redirect('articles:detail', article.pk)
+    return redirect('articles:new')
+```
+
+- ArticleForm으로부터 데이터를 받는다. (html의 form.as_p)
+- ArticleForm(), 괄호 내에 입력받은 데이터를 작성한다. => ArticleForm(request.POST)
+
+
+
+#### is_valid() method
+
+- 유효성 검사를 실행하고, 데이터가 유효한지 여부를 boolean 으로 반환한다.
+- 데이터 유효성 검사를 보장하기 위한 많은 테스트에 대해 Django는 is_valid()를 제공한다.
+
+
+
+#### The save() method
+
+- Form에 바인딩 된 데이터에서 데이터베이스 객체를 만들고 저장한다.
+- ModelForm의 하위 클래스는 기존 모델 인스턴스를 키워드 인자 instance로 받아들일 수 있다.
+  - 이것이 제공되면 save()는 해당 인스턴스를 수정(UPDATE)
+  - 제공되지 않은 경우 save()는 지정된 모델의 새 인스턴스를 만든다(CREATE)
+- Form의 유효성이 확인되지 않은 경우 save()를 호출하면 form.errors를 확인하여 에러확인가능
+
+``` python
+# CREATE A FORM INSTANCE FROM POST DATA
+form = ArticleForm(request.POST)
+
+#CREATE
+new_article = form.save()
+
+# UPDATE
+article = Article.objects.get(pk=1)
+form = ArticleForm(request.POST, instance=article)
+form.save()
+```
+
+
+
+### views.py의 격변
+
+``` python
+def create(request):
+    if request.method == 'POST':
+        # create view함수
+        form = ArticleForm(request.POST)
+        if form.is_Valid():
+            article = form.save()
+            return rendirect('aritlces:detail', article.pk)
+    else:
+        form = ArticleForm()
+    context = {
+        'form' : form
+    }
+    return render(request, 'articles/create.html', context)
+```
+
+```python
+def update(request, pk):
+    article = Article.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            article = form.save()
+            return redirect('articles:detail', article.pk)
+    else:
+        form = articleForm(instance=article)
+    context = {
+        'article' : article,
+        'form' : form,
+    }
+    return render(request, 'articles/update.html',context)
+```
+
+```python
+def delete(request, pk):
+    article = Article.objects.get(pk=pk)
+    if request.method == 'POST':
+        article.delete()
+        return redirect('article:index')
+   	else:
+        return redirect('article:detail', article.pk)
+```
+
+
+
+### forms.py의 파일 위치
+
+- Form class는 forms.py뿐만 아니라 다른 어느 위치에 두어도 상관없음
+- 하지만 되도록 app폴더/forms.py에 작성하는 것이 일반적인 구조
+
+
+
+### form과 ModelForm의 비교
+
+- Form
+  - 어떤 Model에 저장해야 하는 지 알 수 없으므로 유효성 검사 이후 cleaned_data 딕셔너리를 생성
+  - cleaned_data 딕셔너리에서 데이터를 가져온 후 .save() 호출해야 한다.
+  - Model에 연관되지 않은 데이터를 받을 때 사용한다.
+- ModelForm
+  - Django가 해당 model에서 양식에 필요한 대부분의 정보를 이미 정의
+  - 어떤 레코드를 만들어야 할 지 알고 있으므로 바로 .save()호출이 가능하다.
+
