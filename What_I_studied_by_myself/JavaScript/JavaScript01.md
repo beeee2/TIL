@@ -374,3 +374,591 @@
   - 반복가능한 객체를 순회하며 값을 꺼낼 때 사용한다.
   - 반복가능한 객체의 종류 : Array, Map, Set, String 등
 
+---
+
+
+
+# 🌱 함수
+
+#### 함수 in JavaScript
+
+- 참조 타입 주 하나로써 function 타입에 속한다.
+- JavaScript에서 함수를 정의하는 방법은 주로 2가지로 구분된다.
+  - 함수 선언식 (function declaration)
+  - 함수 표현식 (function expression)
+
+- JavaScript 의 함수는 일급객체(First-class citizen)에 해당
+  - 일급객체 : 다음의 조건들을 만족하는 객체를 의미함
+    - **변수에 할당** 가능
+    - 함수의 **매개변수로 전달** 가능
+    - 함수의 **반환 값**으로 사용 가능
+
+
+
+### 선언식 vs 표현식
+
+#### 함수 선언식(function statement, declaration)
+
+- 함수의 이름과 함께 정의하는 방식
+- 3가지 부분으로 구성 
+  - 함수의 이름(name)
+  - 매개변수 (args)
+  - 몸통(중괄호 내부)
+
+```javascript
+function name(args) {
+    // do something
+}
+
+function add(num1, num2) {
+    return num1 + num2
+}
+add(1, 2)
+```
+
+#### 함수 표현식(function expression)
+
+- 함수를 표현식 내에서 정의하는 방식
+  - 표현식 : 어떤 하나의 값으로 결정되는 코드의 단위
+- 함수의 이름을 생략하고 익명 함수로 정의 가능하다
+  - 익명함수(anonymous function) : 이름이 없는 함수
+  - 익명함수는 함수 표현식에서만 가능하다.
+- 3가지 부분으로 구성
+  - 함수의 이름(생략가능)
+  - 매개변수(args)
+  - 몸통 (중괄호 내부)
+
+```javascript
+const name = function (args) {
+    // do something
+}
+
+const add = function (num1, num2) {
+    return num1 + num2
+}
+add(1,2)
+```
+
+#### 함수 선언식과 표현식 비교 정리
+
+|        | 함수 선언식(declaration)                         | 함수 표현식(expression)                          |
+| ------ | ------------------------------------------------ | ------------------------------------------------ |
+| 공통점 | 데이터 타입, 함수 구성요소(이름, 매개변수, 몸통) | 데이터 타입, 함수 구성요소(이름, 매개변수, 몸통) |
+| 차이점 | 익명 함수 불가능, 호이스팅이 가능하다            | 익명함수가 가능하다. 호이스팅이 불가능하다.      |
+| 비고   |                                                  | Airbnb Style Guide에서 권장한다.                 |
+
+#### 함수의 타입
+
+- 선언식 함수와 표현식 함수 모두 타입은 function으로 동일하다.
+
+  ```javascript
+  // 함수 표현식
+  const add = function (args) {}
+  // 함수 선언식
+  function sub(args) {}
+  
+  console.log(typeof add) // function
+  console.log(typeof sub) // function
+
+#### 호이스팅(hoisting) - 함수 선언식
+
+- 함수 선언식으로 선언한 함수는 var로 정의한 변수처럼 hoisting이 발생한다.
+
+- 함수 호출 이후에 선언해도 동작한다.
+
+  ```javascript
+  add(2, 7) // 9
+  function add (num1, num2) {
+      return num1 + num2
+  }
+  ```
+
+#### 호이스팅(hoisting) - 함수 표현식
+
+- 반면 함수 표현식으로 선언한 함수는 함수 정의 전에 호출 시 에러가 발생한다.
+
+- 함수 표현식으로 정의된 함수는 변수로 평가되어 변수의 scope 규칙을 따른다.
+
+  ```java
+  sub(7, 2) // Uncaught ReferenceError : Cannot access 'sub' before initialization
+      
+  const sub = function (num1, num2) {
+      return num1 - num2
+  }
+
+
+
+
+
+#### 기본인자(default arguments)
+
+- 인자 작성 시 '=' 문자 뒤 기본 인자 선언 가능
+
+```javascript
+const greeting = function (name='Anonymous') {
+    return `Hi ${name}`
+}
+greeting() // Hi Anonymous
+```
+
+#### 매개변수와 인자의 개수 불일치를 허용한다.
+
+- 매개변수보다 인자의 개수가 많을 경우,
+
+  ```javascript
+  const noArgs = function() {
+      return 0
+  }
+  
+  noArgs(1, 2, 3) // 0
+  
+  const twoArgs = function (arg1, arg2) {
+      return [arg1, arg2]
+  }
+  
+  twoArgs(1, 2, 3) // [1, 2]
+  ```
+
+- 매개변수보다 인자의 개수가 적을 경우,
+
+  ``` javascript
+  const threeArgs = function (arg1, arg2, arg3) {
+      return [arg1, arg2, arg3]
+  }
+  
+  threeArgs()			// [undefined, undefined, undefined]
+  threeArgs(1)		// [1, undefined, undfined]
+  threeArgs(1,2)		// [1, 2, undefined]
+  ```
+
+#### Rest operator
+
+- **rest operator(...)**를 사용하면 함수가 정해지지 않은 수의 매개변수를 **배열**로 받는다.(python의 *args와 유사하다.)
+
+  - 만약 rest operator로 처리한 매개변수에 인자가 넘어오지 않을 경우에는, 빈 배열로 처리한다.
+
+  ```javascript
+  const restOpr = function (arg1, arg2, ...restArgs) {
+      return [arg1, arg2, restArgs]
+  }
+  
+  restArgs(1,2,3,4,5) // [1,2,[3, 4, 5]]
+  restArgs(1, 2) //[1, 2, []]
+  ```
+
+#### Spread operator
+
+- **spread operator(...)**를 사용하면 **배열인자를 전개**하여 전달 가능하다.
+
+  ```javascript
+  const spreadOpr = function (arg1, arg2, arg3) {
+      return arg1 + arg2 + arg3
+  }
+  
+  const numbers = [1, 2, 3]
+  spreadOpr(...numbers) // 6
+  
+  ```
+
+  
+
+
+
+---
+
+## 💁‍♀️ Arrow Function
+
+#### 화살표 함수(Arrow Function)
+
+- 함수를 비교적 간결하게 정의할 수 있는 문법
+
+- function 키워드 생략 가능
+
+- 함수의 매개변수가 단 하나 뿐이라면, '()'도 생략가능하다.
+
+- 함수 몸통이표현식 하나라면 '{}'과 return도 생략 가능하다.
+
+  ```javascript
+  const arrow1 = function (name) {
+      return `hello, ${name}`
+  }
+  
+  // 1. function 키워드를 삭제한다.
+  const arrow2 = (name) => {return `hello, ${name}`}
+  
+  // 2. 매개변수가 1개일 경우에만 () 생략이 가능하다.
+  const arrow3 = name => {return `hello, ${name}`}
+  
+  // 3. 함수 바디가 return을 포함한 표현식 한개 일겨웅에는 {} & return을 삭제할 수 있다.
+  const arrow4 = name => `hello, ${name}`
+
+
+
+---
+
+## 💁‍♀️ 문자열 (String)
+
+#### 문자열 관련 주요 메서드 목록
+
+| 메서드   | 설명                                            | 비고                                              |
+| -------- | ----------------------------------------------- | ------------------------------------------------- |
+| includes | 특정 문자열의 존재여부를 참/ 거짓으로 반환한다. |                                                   |
+| split    | 문자열을 토큰 기준으로 나눈 배열 반환한다.      | 인자가 없으면 기존 문자열을 배열에 담아 반환한다. |
+| replace  | 해당 문자열을 대상 문자열로 교체하여 반환한다.  | replaceAll                                        |
+| trim     | 문자열의 좌우 공백을 제거하여 반환한다.         | trimStart, trimEnd                                |
+
+
+
+#### includes
+
+- string.includes(value)
+
+  - 문자열에 value가 존재하는 지 판별 후 참또는 거짓을 반환한다.
+
+  ```javascript
+  const str = 'a santa at nasa'
+  str.includes('santa') // true
+  str.includes('asan') // false
+  ```
+
+#### split
+
+- string.split(value)
+
+  - value가 없을 경우, 기존 문자열을 배열에 담아 반환한다.
+  - value가 빈 문자열일 경우 각 문자로 나눈 배열을 반환한다.
+  - value가 기타 문자열일 경우 해당 문자열로 나눈 배열을 반환한다.
+
+  ```javascript
+  const str = 'a cup'
+  str.split()	// ['a cup']
+  str.split('')	// ['a',' ', 'c','u','p']
+  str.split(' ')	// ['a', 'cup']
+  ```
+
+#### replace
+
+- string.replace(from, to)
+
+  - 문자열에 from 값이 존재할 경우, 1개만 to 값으로 교체하여 반환한다.
+
+- string.replaceAll(from, to)
+
+  - 문자열에 from 값이 존재할 경우, 모두 to 값으로 교체하여 반환한다.
+
+  ```javascript
+  const str = 'a b c d'
+  str.replace(' ', '-') // 'a-b c d'
+  str.replaceAll(' ', '-') // 'a-b-c-d'
+  ```
+
+#### trim
+
+- string.trim()
+
+  - 문자열 시작과 끝의 모든 공백문자(스페이스, 탭, 엔터 등)을 제거한 문자열을 반환한다.
+
+- string.trimStart()
+
+  - 문자열 시작의 공백문자(스페이스, 탭, 엔터 등)를 제거한 문자열 반환
+
+- string.trimEnd()
+
+  - 문자열 끝의 공백문자(스페이스, 탭, 엔터 등)를 제거한 문자열 반환
+
+  ```javascript
+  const str = ' hello '
+  
+  str.trim() // 'hello'
+  str.trimStart() //'hello '
+  str.trimEnd() //' hello'
+  ```
+
+  
+
+  
+
+
+
+---
+
+## 🌱 배열 (Arrays)
+
+#### 배열의 정의와 특징
+
+- 키와 속성들을 담고 있는 참조 타입의 **객체(object)**
+- **순서를 보장**하는 특징이 있음 
+- 주로 대괄호를 이용하여 생성하고, 0을 포함한 **양의 정수 인덱스**로 특정 값에 접근이 가능하다.
+- **배열의 길이는 array.length 형태**로 접근 가능하다.
+  - 배열의 마지막 원소는 **array.length -1**로 접근
+
+```javascript
+const numbers = [1, 2, 3,  4, 5]
+console.log(numbers[0])//1
+console.log(numbers[-1])//undefined
+console.log(numbers.length)//5
+
+console.log(numbers[numbers.length - 1])//5
+console.log(numbers[numbers.length - 2])//4
+console.log(numbers[numbers.length - 3])//3
+console.log(numbers[numbers.length - 4])//2
+console.log(numbers[numbers.length - 5])//1
+```
+
+
+
+### 배열관련 주요 메서드
+
+| 메서드          | 설명                                                    | 비고                          |
+| --------------- | ------------------------------------------------------- | ----------------------------- |
+| reverse         | 원본 배열의 요소들의 순서를 반대로 정렬한다             |                               |
+| push & pop      | 배열의 가장 뒤에 요소를 추가 또는 제거한다.             |                               |
+| unshift & shift | 배열의 가장 앞에 요소를 추가 또는 제거한다.             |                               |
+| includes        | 배열에 특정 값이 존재하는지 판별 후 참/거짓을 반환한다. |                               |
+| indexOf         | 배열에 특정 값이 존재하는지 판별 후 인덱스를 반환한다.  | 요소가 없을 경우 -1 반환한다. |
+| join            | 배열의 모든 요소를 구분자를 이용하여 연결한다.          | 구분자 생략 시 쉼표기준이다.  |
+
+#### reverse
+
+- array.reverse()
+
+  - 원본 배열의 요소들의 순서를 반대로 정렬한다.
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5]
+  numbers.reverse()
+  console.log(numbers) // [5, 4, 3, 2, 1]
+  ```
+
+- push & poop
+
+  - array.push() : 배열의 가장 뒤에 요소를 추가한다.
+  - array.pop() : 배열의 가장 마지막 요소를 제거한다.
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5]
+  
+  numbers.push(100)
+  console.log(numbers) // [1,2,3,4,5,100]
+  numbers.pop()
+  console.log(numbers) // [1,2,3,4,5]
+  ```
+
+#### unshift & shift
+
+- array.unshift() 
+
+  - 배열의 가장 앞에 요소를 추가한다.
+
+- array.shift()
+
+  - 배열의 첫번째요소를 제거한다.
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5]
+  
+  numbers.unshift(100)
+  console.log(numbers) // [100, 1, 2, 3, 4, 5]
+  
+  numbers.shift()
+  console.log(numbers) // [1, 2, 3, 4, 5]
+  ```
+
+#### includes
+
+- array.includes(value)
+
+  - 배열에 특정 값이 존재하는지 판별 후 참 또는 거짓 반환
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5]
+  console.log(numbers.includes(1)) // true
+  console.log(numbers.includes(100)) // false
+  ```
+
+#### indexOf
+
+- array.indexOf(value)
+
+  - 배열에 특정 값이 존재하는지 확인 후 가장 첫 번째로 찾은 요소의 인덱스를 반환한다.
+  - 만약 해당 값이 없을 경우 -1을 반환한다.
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5,]
+  let result
+  
+  result = numbers.indexOf(3) // 2
+  console.log(result)
+  
+  result = numbers.indexOf(100) // -1
+  console.log(result)
+  ```
+
+#### join
+
+- array.join([separator])
+
+  - 배열의 모든 요소를 연결하여 반환한다.
+  - separator(구분자)는 선택적으로 지정가능하며, 생략 시 쉼표를 기본 값으로 사용한다.
+
+  ```javascript
+  const numbers = [1, 2, 3, 4, 5]
+  let result
+  
+  result = numbers.join()
+  console.log(result) // 1,2,3,4,5
+  result=numbers.join('')
+  console.log(result) //12345
+  result= numbers.join(' ')
+  console.log(result) // 1 2 3 4 5
+  result = numbers.join('-') 
+  console.log(result) // 1-2-3-4-5
+  
+  ```
+
+#### Spread operator(...)
+
+- 배열내부에서 배열 전개가 가능하다.
+
+- ES5까지는 Array.concat()메서드를 사용한다.
+
+- 얕은 복사에 활용 가능하다.
+
+  ```javascript
+  const array = [1, 2, 3]
+  const newArray= [0, ...aray, 4]
+  
+  console.log(newArray) // [0, 1, 2, 3, 4]
+  ```
+
+
+
+### 배열관련 메서드 목록(2)
+
+- 배열을 순회하며 특정 로직을 수행하는 메서드
+
+- 메서드 호출 시 인자로 callback 함수를 받는 것이 특징이다.
+
+  - **callback 함수 : 어떤 함수의 내부에서 실행될 목적으로 인자로 넘겨받는 함수를 말한다.**
+
+    | 메서드  | 설명                                                         | 비고         |
+    | ------- | ------------------------------------------------------------ | ------------ |
+    | forEach | 배열의 각 요소에 대해 콜백 함수를 한 번씩 실행한다.          | 반환 값 없음 |
+    | map     | 콜백 함수의 반환 값을 요소로 하는 새로운 배열을 반환한다.    |              |
+    | filter  | 콜백 함수의 반환 값이 참인 요소들만 모아서 새로운 배열을 반환한다. |              |
+    | reduce  | 콜백 함수의 반환 값들을 하나의 값(acc)에 누적 후 반환한다.   |              |
+    | find    | 콜백 함수의 반환 값이 참이면 해당 요소를 반환한다.           |              |
+    | some    | 배열의 요소 중 하나라도 판별 함수를 통과하면 참을 반환한다.  |              |
+    | every   | 배열의 모든 요소가 판별함수를 통과하면 참을 반환한다.        |              |
+
+    
+
+
+
+
+
+#### forEach
+
+- array.forEach(callback(element[, index[, array]]))
+
+- 배열의 각 요소에 대해 콜백 함수를 한 번씩 실행한다.
+- 콜백 함수는 3가지 매개 변수로 구성된다.
+  - element : 배열의 요소
+  - index :배열의 인덱스
+  - array : 배열자체
+- **반환 값(return)이 없는 메서드**
+
+```javascript
+array.forEach((element, index, array) => {
+    // do something
+})
+
+const fruits = ['딸기', '바나나', '수박', '사과', '체리']
+fruits.forEach((fruit, index) => {
+    console.log(fruit, index)
+    // 딸기 0
+    // 수박 1
+    // 사과 2
+    // 체리 3
+})
+```
+
+
+
+#### map
+
+- array.map(callback(element[, index[, array ]]))
+
+- 배열의 각 **요소에 대해 콜백함수를 한 번씩 실행**
+
+- 콜백 함수의 **반환값을 요소**로 하는 **새로운 배열을 반환**한다.
+
+- 기존 배열 전체를 다른 형태로 바꿀 때 유용하다.
+
+  ```javascript
+  array.map((element, index, array) => {
+      // do something
+  })
+  
+  const numbers = [1, 2, 3, 4, 5]
+  const doubleNums = numbers.map((num) => {
+      return num*2
+  })
+  
+  console.log(doubleNums)
+  // [2, 4, 6, 8, 10]
+  ```
+
+  
+
+
+
+#### filter
+
+- 배열의 **각 요소에 대해 콜백 함수를 한 번씩 실행**
+- 콜백 함수의 **반환 값이 참인 요소들**만 모아서 **새로운 배열을 반환**한다.
+- 기존 배열의 요소들을 **필터링**할 때 유용하다.
+
+
+
+#### find 
+
+- array.find(callback(element[, index[, array]]))
+- 배열의 각 요소에 대해 콜백 함수를 한 번씩 실행
+- 콜백 함수의 **반환 값이 참이면, 조건을 만족하는 첫번째 요소를 반환**한다.
+  - **하나**만 찾는다.
+- 찾는 값이 **배열에 없으면 undefined를 반환**한다.
+- 132p 수정
+
+
+
+#### reduce
+
+- array.reduce(callback(acc, element, [index[, array]])[, initialValue])
+- 배열의 각 요소에 대해 콜백 함수를 한 번씩 실행
+- 콜백 함수의 **반환 값들을 하나의 값(acc)에 누적 후 반환**
+- reduce 메서드의 주요 매개 변수
+  - acc
+    - 이전 callback함수의 반환 값이 누적되는 변수
+  - initialValue(optional)
+    - 최초 callback함수 호출 시 acc에 할당되는 값, default 값은 배열의 첫 번째 값
+- (참고) 빈배열의 경우 initialValue를 제공하지 않으면 에러가 발새한다.
+
+- 배열을 순회하며 전체값을 줄여나가므로 reduce라고 한다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
