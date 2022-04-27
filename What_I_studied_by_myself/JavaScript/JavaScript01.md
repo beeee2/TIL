@@ -919,6 +919,21 @@ fruits.forEach((fruit, index) => {
 - 콜백 함수의 **반환 값이 참인 요소들**만 모아서 **새로운 배열을 반환**한다.
 - 기존 배열의 요소들을 **필터링**할 때 유용하다.
 
+```javascript
+array.filter((element, index, array) => {
+    // do something
+})
+
+const numbers = [1, 2, 3, 4, 5]
+const oddNums = numbers.filter((num, index) => {
+    return num % 2
+})
+
+console.log(oddNums) // 1 3 5
+```
+
+
+
 
 
 #### find 
@@ -930,6 +945,26 @@ fruits.forEach((fruit, index) => {
 - 찾는 값이 **배열에 없으면 undefined를 반환**한다.
 - 132p 수정
 
+```javascript
+array.find((element, index, array) => {
+    // do something
+})
+
+const avengers = [
+    {name:'Tony', age: 45},
+    {name : 'Steve', age: 32},
+    {name: 'Thor', age:40},
+]
+
+const result = avengers.find((avenger) => {
+    return avenger.name === 'Tony'
+})
+
+console.log(result) // {name : 'Tony', age:45}
+```
+
+
+
 
 
 #### reduce
@@ -938,27 +973,424 @@ fruits.forEach((fruit, index) => {
 - 배열의 각 요소에 대해 콜백 함수를 한 번씩 실행
 - 콜백 함수의 **반환 값들을 하나의 값(acc)에 누적 후 반환**
 - reduce 메서드의 주요 매개 변수
-  - acc
-    - 이전 callback함수의 반환 값이 누적되는 변수
-  - initialValue(optional)
-    - 최초 callback함수 호출 시 acc에 할당되는 값, default 값은 배열의 첫 번째 값
+  - **acc**
+    - 이전 callback함수의 **반환 값이 누적되**는 변수
+  - **initialValue**(optional)
+    - **최초 callback함수 호출 시 acc에 할당되는 값****, default 값은 배열의 첫 번째 값**
 - (참고) 빈배열의 경우 initialValue를 제공하지 않으면 에러가 발새한다.
 
 - 배열을 순회하며 전체값을 줄여나가므로 reduce라고 한다.
 
+```javascript
+const numbers = [1, 2, 3]
+
+const result = numbers.reduce((acc, num) => {
+    return acc + num
+},0 )
+
+console.log(result) //6
+```
 
 
 
+#### some
+
+- array.some(callback(element[, index[, array]]))
+
+- 배열의 **요소 중 하나**라도 주어진 **판별 함수를 통과**하면 **참을 반환**한다.
+
+- 모든 요소가 통과하지 못하면 거짓을 반환한다.
+
+- 빈 배열은 항상 거짓을 반환한다.
+
+  ```javascript
+  array.some((element, index, array) => {
+      //do something
+  })
+  
+  const numbers =[1, 3, 5, 7, 9]
+  
+  const hasEvenNumber = numbers.some((num) => {
+      return num % 2 === 0
+  })
+  console.log(hasEvenNumber) // false
+  
+  const hasOddNumber = numbers.some((num) => {
+      return num % 2
+  })
+  
+  console.log(hasOddNumber) // true
+  
+  ```
+
+  
+
+#### every
+
+- array.every(callback(element[, index [, array]]))
+- 배열의 **모든 요소**가 주어진 **판별 함수를 통과**하면 **참을 반환**한다.
+- 하나의 요소라도 통과하지 못하면 거짓을 반환한다.
+- **빈배열**은 **항상 참**을 반환한다.
+
+```javascript
+array.every((element, index, array) => {
+    // do something
+})
+
+const numbers = [2, 4, 6, 8, 10]
+const isEveryNumberEven = numbers.every((num) => {
+    return num%2 === 0
+})
+console.log(isEveryNumberEven) // true
+
+const isEveryNumberOdd = numbers.every((num) => {
+    return num % 2
+})
+console.log(isEveryNumberOdd) // false
+```
 
 
 
+#### 배열 순회 방법 비교
+
+| 방식       | 특징                                                         | 비교                         |
+| ---------- | ------------------------------------------------------------ | ---------------------------- |
+| for loop   | - 모든 브라우저 환경에서 지원<br />-인덱스를 활용하여 배열의 요소에 접근<br />- break, continue를 사용할 수 있다. |                              |
+| for ... of | - 일부 오래된 브라우저 환경에서 지원하지 않는다.<br />- 인덱스 없이 배열의 요소에 바로 접근 가능하다.<br />-break, continue 사용이 가능하다. |                              |
+| forEach    | - 대부분의 브라우저 환경에서 지원한다.<br />- break, continue 사용이 불가능하다. | Airbnb style guide 권장 방식 |
+
+```javascript
+const chars= ['a', 'b', 'c' ,'d']
+
+//for loop
+for (let idx=0;idx<chars.length; idx++) [
+    console.log(idx, chars[idx])
+]
+
+// for .. of
+for (const char of chars) {
+    console.log(char)
+}
+
+// forEach
+chars.forEach((char, idx) => {
+    console.log(idx, char)
+})
+
+```
 
 
 
+---
+
+## 💁‍♀️ 객체(Objects)
+
+#### 객체의 정의와 특징
+
+- 객체는 속성(property)의 집합이며, 중괄호 내부에 key와 value의 쌍으로 표현한다.
+- key는 문자열 타입만 가능하다.
+  - key 이름에 띄어쓰기 등의 구분자가 있으면 따옴표로 표현한다.
+- value는 모든 타입(함수포함)이 가능하다.
+- 객체 요소 접근은 점 또는 대괄호로 가능하다.
+  - key 이름에 띄어쓰기 같은 구분자가 있으면 대괄호 접근만 가능하다.
+
+```javascript
+const me = {
+    name : 'jack',
+    phoneNumber : '01023456789',
+    'samsung products' : {
+        budes: 'galaxy buds pro',
+        galaxy : 'Galaxy s 20',
+    },
+}
+
+console.log(me.name)
+console.log(me.phoneNumber)
+console.log(me['samsung products'])
+console.log(me['samsung products'].buds)
+```
 
 
 
+#### 객체와 메서드
+
+- 메서드는 객체의 속성이 참조하는 함수
+
+- 객체.메서드명()으로 호출이 가능하다.
+
+- 메서드 내부에서는 this 키워드가 객체를 의미한다.
+
+  - fullName은 메서드가 아니기 때문에 정상출력이 되지 않는다.(NaN)
+  - getFullName은 메서드 이기 때문에 해당 객체의 firstName과 lastName을 정상적으로 이어서 반환한다.
+
+  ```javascript
+  const me = {
+      firstName : 'john',
+      lastName : 'doe',
+      fullName : this.firstName + this.lastname// NaN
+      
+      getFullName : fucntion () {
+      return this.FirstName + this.lastName
+  }
+  }
+  ```
+
+  
+
+#### 객체 관련 ES6 문법
+
+1. 속성명 축약
+2. 메서드명 축약
+3. 계산된 속성명 사용
+4. 구조 분해 할당(배열도 가능)
+5. 객체 전개 구문(Spread Operator)
 
 
 
+#### 속성명 축약(shorthand)
+
+- 객체를 정의할 때 key와 할당하는 변수의 이름이 같은 예시와 같이 축약이 가능하다.
+
+  ```javascript
+  const books = ['learning JS', 'Learing Python']
+  const magazines = ['Vogue', 'Science']
+  
+  //ES6+
+  const bookShop = {
+      books,
+      magazings,
+  }
+  console.log(bookShop)
+  /*
+  
+  {
+  	books:['learning JS', 'Learing Python'],
+  	magazinges : ['Vogue', 'Science']
+  }
+  */
+  ```
+
+  
+
+#### 메서드명 축약
+
+- 메서드 선언 시 function 키워드 생략 가능
+
+``` javascript
+const obj = {
+    greeting() {
+        console.log('HI')
+    }
+}
+
+obj.greeting() // HI
+```
+
+
+
+#### 계산된 속성
+
+- 객체를 정의할 때 KEY의 이름을 표혀식을 이용하여 동적으로 생성 가능하다.
+
+  ```javascript
+  const key = 'regions'
+  const value = ['광주', '대전', '구미', '서울']
+  
+  const ssafy = {
+      [key] : value,
+  } 
+  console.log(ssafy) // {regions: Array(4)}
+  console.log(ssafy.regions) // ['광주', '대전', '구미', '서울']
+  ```
+
+
+
+#### 구조 분해 할당
+
+- 배열 또는 객체를 분해하여 속성을 변수에 쉽게 할당할 수 있는 문법
+
+  ```javascript
+  const userInformation = {
+      name : 'kim',
+      userId : 'ssafy1234',
+      phoneNumber : '010-1234-1234',
+      email : 'ssafy@ssafy.com'
+  }
+  
+  const {name} = userInformation
+  const {userId} = userInformation
+  const {phoneNumber} = userInformation
+  const {email} = userInformation
+  
+  const {name, userId} = userInformation
+  ```
+
+  
+
+#### Spread Operator
+
+- spread operator(...)을 사용하면 객체 내부에서 객체 전개가 가능하다.
+- ES5까지는 Object.assign() 메서드를 사용한다.
+- 얕은 복사에 활용 가능하다.
+
+``` javascript
+const obj = {b:2, c:3, d:4}
+const newObj = {a:1, ...obj, e:5}
+
+console.log(newObj) // {a:1, b:2, c:3, d:4, e:5}
+```
+
+
+
+#### JSON(JavaScript Object Notation)
+
+- key-value쌍의 형태로 데이터를 표기하는 언어 독립적 표준 포맷
+- 자바스크립트의 객체와 유사하게 생겼으나 실제로는 문자열 타입이다.
+  - 따라서 JS의 객체로써 조작하기 위해서는 구문 분석(parsing)이 필수적이다.
+
+
+
+- 자바스크립트에서는 JSON을 조작하기 위한 두 가지 내장 메서드를 제공한다.
+  - JSON.parse()
+    - JSON => 자바스크립트 객체
+  - JSON.stringify()
+    - 자바스크립트 객체 => JSON
+
+```javascript
+//object => JSON
+const jsonData = JSON.strignify({
+    coffee : 'Americano',
+    iceCream : 'Cookie and cream',
+})
+
+console.log(jsonData) //	"{"coffee":"Ameriacano".,...}"
+console.log(typeof jsonData) //string
+
+const parsedData = JSON.parse(jsonData)
+
+console.log(parsedData) // {coffee: 'Ameircano', ...}
+console.log(typeof parsedData) // object
+```
+
+
+
+---
+
+## 💁‍♀️ this 정리
+
+#### this is window? object?
+
+- JS의 this는 실행 문맥에 따라 다른 대상을 가리킨다.
+- class 내부의 생성자 함수
+  - this는 생성되는 객체를 가리킨다.
+- 메서드(객체.메서드명()으로 호출가능한 함수)
+  - this는 해당 메서드가 소속된 객체를 가리킨다.
+- 위의 두 가지 경우를 제외하면 모두 최상위 객체 window를 가리킨다.
+
+```javascript
+function getFullName() {
+    return this.firstName + this.lastName
+}
+const me = {
+    firstName : 'jonh',
+    lastName : 'doe',
+    getFullName: getFullName,
+}
+
+const you = {
+    firstName: 'jack',
+    lastName :'lee',
+    getFullName : getFullName
+}
+
+me.getFullName()	//johndoe
+you.getFullName()	// jacklee
+getFullName()		//NaN
+```
+
+
+
+#### function 키워드와 화살표 함수 차이
+
+- this.radiuses는 메서드(객체.메서드명()으로 호출이 가능하다.) 소속이기 때문에 정상적으로 접근이 가능하다.
+- forEeach 의 콜백함수의 경우 메서드가 아니므로 객체.메서드명()식으로 호출이불가능한다.
+- 때문에 콜백함수 내부의 this는 window가 되어 this.PI는 정상적으로 접근이 불가능하다.
+- 이 콜백함수 내부에서 this.PI에 접근하기 위해서 함수객체.bind(this)메서드를 사용한다.
+- 이 번거로운 bind과정을 없앤 것이 화살표 함수이다.
+
+```javascript
+const obj = {
+    PI : 3.14,
+    radiuses : [1, 2, 3, 4, 5],
+    printArea : function() {
+        this.radiuses.forEach(function (r) {
+            console.log(this.PI * r * *r)
+        }.bind(this))
+    },
+}
+
+const obj = {
+    PI : 3.14,
+    radiuses : [1, 2, 3, 4, 5],
+    printArea : function((r) => {
+   	console.log(this.PI * r * r) 
+}),
+}
+```
+
+
+
+#### function 키워드와 화살표 함수의 차이
+
+- 함수 내부에 this 키워드가 존재할 경우
+  - 화살표 함수와 function 키워드로 선언한 함수가 다르게 동작한다.
+- 함수 내부에 this 키워드가 존재하지 않을 경우
+  - 완전히 동일하게 조작한다.
+
+
+
+---
+
+## 💁‍♀️ lodash
+
+#### A modern Javascript utility Library
+
+- 모듈성, 성능 및 추가 기능을 제공하는 JavaScript 유틸리티 라이브러리
+- array, object 등 자료구조를 다룰 때 사용하는 유용하고 간편한 유틸리티 함수들을 제공한다.
+- 함수 예시
+  - reverse, sortBy, range, random, cloneDeep ...
+
+```html
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script>
+    // 위의 CDN import를 통해 _ (underscore) 식별자를 사요할 수 있다.
+        
+       	_.sample([1,2,3,4]) // 3(random 1 element)
+        _.sampleSize([1,2,3,4], 2) // 2, 3
+        _.reverse([1,2,3,4]) //[4,3,2,1]
+        _.range(5)// [0,1,2,3,4]
+        _.range(1,5) // [1, 2, 3,4]
+        _.range(1,5,2)// [1, 3]
+    </script>
+</body>
+```
+
+- lodash를 사용하지 않을 경우, 깊은 복사는 직접 함수를 만들어서 구현해야 한다. (내장된 깊은 복사 관련 함수가 없다.)
+
+```html
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    
+    const original = {a: {b:1}}
+    const ref = original
+    const copy = _.cloneDeep(original)
+    
+    console.log(original.a.b,ref.a.b, copy.a.b) // 1, 1, 1
+    ref.a.b = 10
+    console.log(original.a.b, ref.a.b , copy.a.b) // 10, 10, 1
+    copy.a.b = 100
+    console.log(original.a.b, ref.a.b, copy.a.b)	// 10, 10, 100
+</body>
+```
 
