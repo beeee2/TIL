@@ -278,3 +278,27 @@ querySelectorAll()에 의해 반환되는 NodeList는 Static Collection으로 �
 
 
 
+#### Loadsh
+
+- 공식문서 참조하기
+
+```python
+import random
+
+numes = [1, 2, 3, 4, 5, 6]
+pick = random.choice(nums)
+
+oepn('./images/{pick}.jpg')
+```
+
+- loadsh의 method 중 range 사용하기
+  - array로 숫자를 만들어준다.
+  - _.range([start=0], end, [step=1])
+
+
+
+
+
+#### console.dir()
+
+- 괄호 한 요소에서 사용할 수 있는  모든 속성을 알 수 있다.
