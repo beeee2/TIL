@@ -151,7 +151,8 @@
 
 - 제공한 선택자와 일치하는 여러 element를 선택
 - 매칭할 하나 이상의 셀렉터를 포함하는 유효한 CSS selector를 인자(문자열)로 받는다.
-- 지정된 셀렉터에 일치하는 NodeList를 반환한다.
+- 지정된 셀렉터에 일치하는 **NodeList를 반환**한다.
+  - NodeList는 유사 배열이고 forEach를 이용하여 반복을 편하게 할 수 있다.
 
 
 
@@ -172,13 +173,106 @@
 - index로만 각 항목에 접근 가능
 - 단, HTMLCollection과 달리 배열에서 사용하는 for Each 메서드 및 다양한 메서드 사용 가능
 
+
+
 둘 다LiveCollection으로 DOM의 변경사항을 실시간으로 반영하지만, 
 
 querySelectorAll()에 의해 반환되는 NodeList는 Static Collection으로 실시간으로 반영되지 않는다.
 
 
 
+#### DOM 선택 - Collection
 
+- Live Collection
+
+  - 문서가 바뀔 때마다 실시간으로 업데이트 된다
+
+  - DOM의 변경사항을 실시간으로 collection에 반영
+
+  - ex) HTMLCollection, NodeList
+
+    
+
+- Static Collection (non-live)
+
+  - DOM이 변경되어도 collection 내용에는 영향을 주지 않는다.
+  - querySelectorAll()의 반환 NodeList만 static collection
+
+
+
+### DOM 변경, 변경관련 메서드
+
+#### Creation
+
+- document.createElement()
+  - 작성한 태그 명의 HTML 요소를 생성하여 반환한다.
+
+
+
+#### XSS(Cross-site Scripting)
+
+- 공격자가 입력 요소를 사용하여(<input>) 웹 사이트 클라이언트 측 코드에 악성 스크립트를 삽입해 공격하는 방법
+
+- 피해자(사용자)의 브라우저가 악성 스크립트를 실행하며 공격자가 액세스 제어를 우회하고 사용자를 가장할 수 있도록 함
+
+ 
+
+
+
+
+
+---
+
+## 🌱 DOM 조작 실습
+
+#### Event(이벤트) 개념
+
+- **네트워크 활동**이나 **사용자와의 상호작용** 같은 사건의 **발생**을 **알리기 위한 객체**
+- 이벤트 발생
+  - 마우스 클릭, 키보드 누르는 등 사용자 행동으로 발생할 수 있음
+  - 특정 메서드를 호출하여 프로그래밍적으로도 만들어 낼 수 있다.
+
+
+
+#### Event 기반 인터페이스
+
+- AnimationEvent, ClipborardEvent, DragEvent 등
+- UIEvent
+  - 간단한 사용자 인터페이스 이벤트
+  - Event의 상속을 받음
+  - MouseEvent, KeyboardEvent, InputEvent, FocusEvent 등의 부모 객체 역할을함
+
+
+
+### Event handler
+
+- EventTarget.addEventListener()
+  - 지정한 이벤트가 대상에 전달될 때마다 **호출할 함수**를 설정한다.
+  - 이벤트를 지원하는 모든 객체를 대상으로 지정 가능하다.
+  - addEventListener(type, listener[, options])
+    - type 반응할 이벤트 유형(대소문자 구분 문자열)
+  - listener
+    - 지정된 타입의 이벤트가 발생했을 때 알림을 받는 객체
+    - EventListener 인터페이스 혹은 JS function 객체(콜백  함수)여야 한다.
+
+
+
+
+
+### DOM관련 객체의 상속 구조 복습
+
+- EventTarget
+  - Event Listener를 가질 수 있는 객체가 구현하는 DOM 인터페이스
+
+
+
+#### Event 취소
+
+- event.preventDefault()
+- 현재 이벤트의 기본 동작을 중단
+- HTML 요소의 기본 동작을 작동하지 않게 막는다.
+  - A태그의 기본동작은 클릭시 링크로 이동/ form 태그의 기본 동작은 form 데이터 전송
+- 이벤트를 취소할 수 있는 경우, 이벤트의 전파를 막지않고 그 이벤트를 취소한다.
 
 
 
