@@ -986,3 +986,217 @@ const amIsexy = new Promise((resolve, reject) => {
       .catch(error => console.log("catch로 error띄우기"));
 ```
 
+
+
+## Promise.all
+
+- Promise.all은 주어진 모든 Promise를 실행한 후 진행되는 하나의 Promise를 반환한다. 
+
+- 모든 Promise가 전부 reslove되고 나면 마지막 Promise를 리턴값으로 준다.
+
+- 모든 값을 얻을 때까지 Promise.all이 기다렸다가 제공을 한다. 
+
+  - 하나의 API가 아닌 3개, 4개의 API에서 값을 불러와야 할 때가 있다.
+
+    ```javascript
+    const p1 = new Promise(resolve => {
+          setTimeout(resolve, 5000, "First");
+        });
+        const p2 = new Promise(resolve => {
+          setTimeout(resolve, 1000, "Second");
+        });
+        const p3 = new Promise(resolve => {
+          setTimeout(resolve, 3000, "Third");
+        });
+    
+        const motherPromise = Promise.all([p1, p2, p3]);
+    
+        motherPromise.then(values => console.log(values));
+    // (3) ['First', 'Second', 'Third']
+    ```
+
+- 만약 하나의 promise라도 reject 되면 다른 모든 promise들도 같이 reject 된다.
+
+  ```javascript
+  const p1 = new Promise(resolve => {
+        setTimeout(resolve, 5000, "First");
+      });
+      const p2 = new Promise((resolve, reject) => {
+        setTimeout(reject, 1000, "I hate JS");
+      });
+      const p3 = new Promise(resolve => {
+        setTimeout(resolve, 3000, "Third");
+      });
+  
+      const motherPromise = Promise.all([p1, p2, p3]);
+  
+      motherPromise
+        .then(values => console.log(values))
+        .catch(err => console.log(err));
+  ```
+
+  
+
+## Promise.race
+
+- Promise.race는 Promise ALl이랑 사용법은 동일하다.
+
+- Promise Race의 다른 점은 주어진 Promise들 중 하나라도 resolve 되거나 reject되면 된다는 것이다. Promise들 가장 빠른게 결과를 결정한다.
+
+  ```javascript
+  const p1 = new Promise(resolve => {
+      setTimeout(resolve, 10000, "First");
+  });
+  const p2 = new Promise((resolve, reject) => {
+      setTimeout(reject, 5000, "I hate JS");
+  });
+  const p3 = new Promise(resolve => {
+      setTimeout(resolve, 3000, "Third");
+  });
+  
+  const motherPromise = Promise.race([p1, p2, p3]);
+  
+  motherPromise
+      .then(values => console.log(values))
+      .catch(err => console.log(err));
+  ```
+
+  - 어느 것이 먼저 되는지 상관없을 때 race를 사용하면 된다.
+
+
+
+## finally
+
+- Promise가 성공하거나 실패한 후 마지막으로 어떤 행동을 하기를 원할 수 있다. 그럴 때 사용하는 것이 finally다. 
+
+```javascript
+const p1 = new Promise((resolve, reject) => {
+      setTimeout(resolve, 10000, "First");
+    })
+      .then((value) => console.log(value))
+      .catch((error) => console.log(error))
+      .finally(() => console.log("I'm Done"));
+```
+
+
+
+## Real word Promises
+
+#### fetch
+
+- fetch는 Promises를 return한다.
+
+- fetch가 하는 일은 뭔가를 가지고 오는 것이다.
+
+  ```javascript
+  
+  fetch("http://127.0.0.1:5500/app.html")
+      .then(response => response.text())
+      .then(text => console.log(text))
+  ```
+
+  
+
+
+
+---
+
+# 🌱 ASYNC / AWAIT
+
+## Async Await
+
+- async/await는 두 Promise의 업데이트다.
+- 계속해서 반복해서 작성되는 then 코드는 보기 별로 좋지 않다.
+- 기본적으로 async/await은 Promise를 사용하는 코드를 더 좋게 보이게하는 문법이다.
+- async/await은 Promise밖에서 값을 가져올 수 있는 방법이다.
+
+
+
+- 먼저, await은 혼자서는 사용할 수 없다. await은 항상 async function 안에서만 사용할 수 있다.
+- 수 많은 then을 사용하는 것 대신에 await을 사용하면 된다.
+- **await은 기본적으로 Promise가 끝나길 기다린다.** 
+
+```javascript
+const getMoviesAsync = async () => {
+      const response = await fetch("https://yts.mx/api/v2/list_movies.json");
+      const json = await response.json()
+      console.log(json)
+    };
+
+getMoviesAsync();
+```
+
+
+
+
+
+## try catch finally
+
+```javascript
+const getMoviesAsync = async () => {
+    try {
+        const response = await fetch("https://yts.mx/api/v2/listmovies.json");
+        const json = await response.json()
+        console.log(json) 
+    } catch(e) {
+        console.log(e)
+    }
+};
+
+getMoviesAsync();
+```
+
+```javascript
+const getMoviesAsync = async () => {
+    try {
+        const response = await fetch("https://yts.mx/api/v2/listmovies.json");
+        const json = await response.json()
+        console.log(json) 
+    } catch(e) {
+        console.log(e)
+    } finally {
+        console.log("We are Done!")
+    }
+};
+```
+
+- catch block은  await 안에 있는 error만 잡는게 아니라 밖에 있는 error까지 잡는다.
+- 어떤 error가 try block 에 있던지 무조건 잡는다. 
+
+
+
+## Parallel Async Await
+
+#### Parallel
+
+```javascript
+const getMoviesAsync = async () => {
+    try {
+        const [moviesResponse, suggestionsResponse] = await Promise.all([
+            fetch("https://yts.mx/api/v2/list_movies.json"),
+            fetch("https://yts.mx/api/v2/movie_suggestions.json?movie_id=100")
+        ]);
+
+        const [moviews, suggestions] = await Promise.all([
+            moviesResponse.json(),
+            suggestionsResponse.json()
+        ]);
+
+        console.log(moviews, suggestions)
+    } catch(e) {
+        console.log(3)
+    }
+};
+getMoviesAsync();
+```
+
+
+
+
+
+
+
+
+
+
+
