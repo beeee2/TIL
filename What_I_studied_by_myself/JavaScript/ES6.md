@@ -1192,11 +1192,282 @@ getMoviesAsync();
 
 
 
+# 🌱 CLASSES
+
+## Introduction to Classes
+
+- 내가 엄청 많은 코드를 가지고 있고 이것을 구조화하길 원할 때 Class를 이용한다면 매우 유용할 수 있다.
+
+- Class는 기본적으로 blueprint(청사진)이다.
+
+- Class는 재사용이 가능하다.
+
+- Class는 constructor(생성자)를 안에 가지고 있다.
+
+- 청사진 Class를 이용하여 변수를 선언해줘야 한다.
+
+  ```javascript
+  class User {
+      constructor() {
+          this.userName = "sueun";
+      }
+  }
+  
+  const sexyUser = new User();
+  console.log(sexyUser.userName)
+  ```
+
+  ```javscript
+  class User {
+        constructor(name) {
+          this.userName = name;
+        }
+      }
+  
+      const sexyUser = new User("hodoo");
+      const uglyUser = new User("sueun");
+      console.log(sexyUser.userName);
+      console.log(uglyUser.userName);
+  ```
+
+  ``` javascript
+  class User {
+        constructor(name) {
+          this.userName = name;
+        }
+        sayHello() {
+          console.log(`Hello, my name is ${this.userName}`);
+        }
+      }
+  
+      const sexyUser = new User("hodoo");
+      sexyUser.sayHello();
+  ```
+
+
+
+## Extending Classes
+
+- 'this'는 기본적으로 클래스 안에서 볼 수 있고 클래스 그 자체를 가리킨다.
+  - 클래스에 무언가를 추가하고 싶거나 어떤것을 불러오고 싶을 때 'this'를 사용하게 될 것이다.
+- this는 상황에 따라 가리키는 것이 다른데 내가 어떻게 class와 functions을 정의하느냐에 따라 달라진다.
+
+``` javascript
+class User {
+    constructor(name, lastName, email, password) {
+        this.userName = name;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+    sayHello() {
+        console.log(`Hello, my name is ${this.userName}`);
+    }
+    getProfile() {
+        console.log(`${this.username} ${this.email} ${this.password}`);
+    }
+    updatePassword(newPassword, currentPassword) {
+        if (currentPassword === this.password) {
+            this.password = newPassword
+        } else {
+            console.log( "Can't change password.");
+        }
+    }
+}
+
+const sexyUser = new User("hodoo", "lee", "hodo@nate.com", "1234");
+sexyUser.updatePassword("abcd", "1234");
+console.log(sexyUser.password);
+```
 
 
 
 
 
+#### extend
+
+- 예를 들어 user 클래스를 가지고 있고 user 클래스의 어떤 부분을 약간 더 수정하고 싶다면?
+
+- extends 를 사용하여 user클래스를 상속한다.
+
+  ```javascript
+  class User {
+      constructor(name, lastName, email, password) {
+          this.userName = name;
+          this.lastName = lastName;
+          this.email = email;
+          this.password = password;
+      }
+      sayHello() {
+          console.log(`Hello, my name is ${this.userName}`);
+      }
+      getProfile() {
+          console.log(`${this.username} ${this.email} ${this.password}`);
+      }
+      updatePassword(newPassword, currentPassword) {
+          if (currentPassword === this.password) {
+              this.password = newPassword
+          } else {
+              console.log( "Can't change password.");
+          }
+      }
+  }
+  
+  const sexyUser = new User("hodoo", "lee", "hodo@nate.com", "1234");
+  sexyUser.updatePassword("abcd", "1234");
+  console.log(sexyUser.password);
+  
+  class Admin extends User {
+      deleteWebsite() {
+          console.log("Deleting the whole website...")
+      }
+  }
+  
+  const sexyAdmin = new Admin();
+  sexyAdmin.deleteWebsite();
+  ```
+
+  
+
+## 
+
+- 위에서 다뤘던 user를 리팩토링 해보자. 많은 인자값들을 객체로 묶어 넣어준다.
+
+  - 만약 내가 여러 arguments를 가지고 있다면 options 오브젝트로 하는 게 더 좋다. 내가 어떤 값을 넘겨주는 지 볼 수 있기 때문이다.
+
+    ```javascript
+    class User {
+          constructor(options) {
+            this.userName = options.userName;
+            this.lastName = options.lastName;
+            this.email = options.email;
+            this.password = options.password;
+          }
+          sayHello() {
+            console.log(`Hello, my name is ${this.userName}`);
+          }
+          getProfile() {
+            console.log(`${this.userName} ${this.email} ${this.password}`);
+          }
+          updatePassword(newPassword, currentPassword) {
+            if (currentPassword === this.password) {
+              this.password = newPassword
+            } else {
+              console.log( "Can't change password.");
+            }
+          }
+        }
+    
+        const sexyUser = new User({
+          userName :"hodoo", 
+          lastName: "lee", 
+          email : "hodo@nate.com", 
+          password : "1234"
+        });
+        sexyUser.updatePassword("abcd", "1234");
+        console.log(sexyUser.password);
+    ```
+
+- admin 만들기
+  - 우리가 constructor없이 admin을 만든다면 아무런 문제가 없지만,
+  - 우리가 admin constructor을 사용하게 된다면 기존의(위에서 정의된) user constructor을 잃게 된다.
+  - 우리는 특별한 함수를 호출한다. 이 함수는 classes 안에서만 유효하고 super라고 불린다.
+  - super는 원시클래스를 호출한다.
+
+```javascript
+<body>
+  <span id="count">0</span>
+  <button id="add">+</button>
+  <button id="minus">-</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script>
+    class User {
+      constructor({username, lastname, email, password}) {
+        this.username = username;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+      }
+      getProfile() {
+        console.log(`${this.username} ${this.email} ${this.password}`)
+      }
+
+      updateProfile(newpassword, currentpassword) {
+        if (currentpassword == this.password) {
+          this.password = newpassword;
+        } else {
+          console.log("can't change password");
+        }
+      }
+    }
+
+    const sexyUser = new User({
+      username : "Nico",
+      lastname : "serrano",
+      email : "email@com",
+      password : "1234",
+    });
+
+    class Admin extends User {
+      constructor({username,lastname,email,password,superadmin,isActive}) {
+        super({username,lastname,email,password});
+        this.superadmin = superadmin;
+        this.isActive = isActive;
+      }
+
+      deleteWebsite() {
+        console.log("Boom!");
+      }
+    }
+
+    const admin = new Admin({
+      username : "nico",
+      lastname : "serrano",
+      email : "nico@com",
+      password : "1234",
+      superadmin : true,
+      isActive: true
+    })
+
+    class Counter {
+      constructor ({initialNumber=0, counterId, plusId, minusId}) {
+        this.count = initialNumber;
+        this.counter = document.querySelector("#count");
+        this.plusBtn = document.querySelector("#add");
+        this.minusBtn = document.querySelector("#minus");
+        this.addEventListeners();
+      }
+
+      addEventListeners= () => {
+        this.plusBtn.addEventListener("click", this.increase);
+        this.minusBtn.addEventListener("click", this.decrease);
+      };
+
+      increase = () => {
+        this.count = this.count + 1;
+        this.repaintCount();
+      }
+      
+      decrease = () => {
+        this.count = this.count - 1; 
+        this.repaintCount();
+      }
+
+      repaintCount =() =>  {
+        this.counter.innerText = this.count;
+      }
+    } ;
+
+    new Counter ({
+      initialNumber: 0,
+      counterId : "count",
+      plusId : "add",
+      minusId : "minus"
+    })
+   </script>
+</body>
+```
 
 
 
