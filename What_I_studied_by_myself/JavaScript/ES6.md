@@ -1471,3 +1471,204 @@ console.log(sexyUser.password);
 
 
 
+---
+
+# 🌱 SYMBOL, SET AND MAP
+
+## Symbols
+
+- 자바스크립트는 Strings, Booleans, numbers를  Data types으로 가지고 있다. 
+- Symbols은 새로운 Data types이다.
+- Symbols는 생성자에 한 가지를 가지는데 바로 Description이다.
+
+
+
+## Sets
+
+- 자바스크립트는 **object**를 사용하여 object의 property를 삭제하거나 추가하거나 혹은 가지고 올 수도 있다.
+- set을 사용하면 어떤 타입의 고유한 value든 저장할 수 있게 해준다.
+- set의 강력한 api가 우리의 작업을 도와줄 것이다.
+  - has, delete, add , size...
+
+
+
+## WeakSet
+
+- weak sets은 sets과 같지만 다르다. 
+
+```javascript
+const weakSet = new WeakSet();
+```
+
+- weak sets는 오로지 ojects만 저장할 수 있다.
+
+- garbage collector은 뭔가 사용되지 않거나 닿지 않거나 또는 뭐가 됐든 간에 메모리 내에 요소들을 차지하고 있다면 이것들을 청소하려고 할 것이다. 
+- weak set에서 저장된 것들은 약하게 붙들려 있다. 
+  - 만약 weak set에 넣은 object를 가리키는 것이 없다면 이것은 지워질 것이다.
+  - garbage collector는... 메모리가 부족할 때 찾아온다.
+
+
+
+## Map and Weakmap 
+
+```javascript
+const map = new Map();
+```
+
+- map도 다양한 API를 가지고 있다.
+  - delete, clear, entries, forEach, set has Key
+  - map은 add가 없다.
+
+- set은 두개의 arguments를 준다. key와 value.
+
+  - key에 우리가 할 수 있는 것은 뭔가를 넣는 것이다. 
+
+    ```jacascript
+    map.set("age", 18)
+    ```
+
+    
+
+  - 값을 넣는 대신에 이름을 넣을 수 있다.
+
+    ```javascript
+    map.has("age"); // true
+    map.get("age"); // 18
+    ```
+
+    
+
+---
+
+# 🌱 GENERATORS AND MAPS
+
+## Generators
+
+- generators는 기본적으로 pause할 수 있는 함수다.
+- generators를 사용하기 위해서는 몇가지 규칙을 따라야 한다.
+  - function 그리고 *을 사용한다.
+  - function에 *를 넣으면 한 단어를 해제하게 된다. 그리고 이 단어는 yield 이다.
+  - yield는 return과 같다.
+
+- 할당된 변수에 .next를 사용하여 값을 불러올 수 있다.
+
+```javascript
+function* listPeople() {
+    yield "Dal";
+    yield "Flynn";
+    yield "Mark";
+    yield "Godkimchi";
+    yield "Japan Guy";
+}
+
+const listG = listPeople();
+```
+
+```javascript
+listG.next()
+```
+
+- 첫번째 value인 dal부터 반환된다. 
+- 출력값에 done:false는 generator가 아직 끝나지 않았음을 의미한다.
+- 만약 다시 listG.next() 호출한다면 두 번째 value인 Flynn object을 얻을 수 있다.
+
+
+
+## Proxies
+
+- proxy를 filter처럼 생각할 수 있다. 
+
+- proxy는 두 개의 input을 취하는데 하나는 target(우리가 filter를 하고 싶은 object),  또 다른 하나는 handler(userObj의 필터)다.
+
+  ```javascript
+  const userObj = {
+      username : "nico",
+      age : 12,
+      password : 1234
+  }
+  
+  const userFilter = {};
+  
+  const filteredUser = new Proxy(userObj, userFilter);
+  ```
+
+  - fileredUser을 호출하면 기본적으로 userObj를 얻는다.
+
+```javascript
+const userObj = {
+username : "nico",
+age : 12,
+password : 1234
+}
+
+const userFilter = {
+get: () => {
+console.log("Somebody is getting something");
+},
+set: () => {
+console.log("Somebody wrote something");
+}
+};
+
+const filteredUser = new Proxy(userObj, userFilter);
+```
+
+- filteredUser를 생성하고 proxy에게 targetObj를 주고 그 다음 userFilter를 사용한다.
+
+- userFilter 안에 우리가 정의한 함수들이 기존 메서드를 엎어쓰고 접근하지 못하게끔 막아주고 있다. 
+
+- 동작이 가로채진다는 의미에서 trap이라고 부르기도 한다. 
+
+  - get은 property value를 취하는 것에 대한 trap
+
+    ```javascript
+    const handler1 = {
+        get: function(target, prop, receiver) {
+            
+        }
+    }
+    ```
+
+
+
+---
+
+# 🌱 ES 2020
+
+## New ?? Operator 
+
+- Nullish coalescing operator (??)
+- ??도 ||(or)와 같은 논리연산자이지만 약간의 차이는 있다.
+  - ||는 변수에 기본값을 줄 때 유용하다.
+  - or 연산자는 변수에 아무것도 없으면 (False) 다음을 확인하게 된다. 이렇게 해서 default 값을 변수에 넣어줄 수 있다.
+
+```javscript
+let name;
+//undefined
+console.log("hello", name)
+//VM586:1 hello undefined
+//undefined
+console.log("hello", name ||  "anonymous")
+//VM632:1 hello anonymous
+```
+
+- 문제는 or연산자는 boolean연산자여서 거짓이거나 참인 것만 판단할 수 있다.
+
+```javascript
+//undefined
+name= 0
+//0
+console.log("hello", name || "anonymous")
+//VM889:1 hello anonymous
+```
+
+- name에 0이라는 값이 있음에도 anonymous가 출력된다.
+- nullish coalescing 연산자(??)는 이런 경우를 위해서 만들어 졌다. 
+
+- **??는 오직 변수 값이 null이거나 undefined 일때만 작동**한다. 
+
+```javascript
+console.log("hello", name ?? "anonymous")
+//VM918:1 hello 0
+```
+
