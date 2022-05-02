@@ -1672,3 +1672,42 @@ console.log("hello", name ?? "anonymous")
 //VM918:1 hello 0
 ```
 
+
+
+## Optional Chaining
+
+```javascript
+console.log(lynn?.profile?.email?.provider?.name)
+```
+
+- && 를 여러번 쓰지 않아도 된다.
+- lynn이 존재하고 lynn.profile이 존재하고 lynn.profie.email이 존재하고 그 밑에 provider와 그 밑에 name이 존재하면 name을 출력하라는 이야기.
+
+- 어떤 object가 내가 예상한 것을 가지고 있는지 아닌지 확신할 수 없을 때 사용하면 좋다.
+
+
+
+## padStart and padEnd
+
+- padding을 넣는다는 점에서 둘 모두 비슷하다.
+- 문자열의맨 앞이나 맨 뒤에 padding을 넣는다. 
+
+```javscript
+String(minutes).padStart(2, "0")
+// 만약 minutes가 두 자리 수가 안 된다면 그 부분은 0으로 맨 앞에 채우라는 이야기
+// 첫 번째 인자는 문자열의 길이를 뜻한다. 
+
+"5".padStart(5,"x")
+//"xxxx5"
+```
+
+- padStart와 padEnd는 값을 반환한다. 원본 값을 변화시키지 않는다.
+
+
+
+## trim, trimStart, trimEnd
+
+- trimStart는 기본적으로 그냥 자르는 기능이다.
+  - 문장 앞에 비어있는 공간을 다 잘라주는 역할을 한다.
+- 앞부분과 뒷부분 모두 공백을 제거하고 싶다면 trim을 사용하면 된다.
+- trim은 string 자체를 바꾸지 않는다. 
