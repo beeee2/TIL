@@ -281,3 +281,17 @@ btn.addEventListener('click', function () {
    - 각각의 callback은 주어진 순서대로 하나하나 실행하게 된다.
    - Chaining은 Promiise의 가장 뛰어난 장점
 
+
+
+## 🌱 Axios
+
+- "Promise base HTTP client for the browser and Node.js"
+- 브라우저를 위한 Promise 기반의 클라이언트
+- 원래는 "XHR"이라는 브라우저 내장 객체를 활용해 AJAX 요청을 처리하는데, 이보다 편리한 AJAX 요청이 가능하도록 도움을 준다.
+
+```javascript
+axios.get("url")
+	.then(..)
+	.catch(..)
+```
+
