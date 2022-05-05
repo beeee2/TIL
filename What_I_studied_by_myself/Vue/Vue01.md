@@ -524,11 +524,264 @@ const app = new Vue({
 
 
 
+### v-bind
+
+- HTML 요소의 속성에 Vue의 상태 데이터를 값으로 할당
+- Object 형태로 사용하면 value가 true인 key가 class바인딩 값으로 할당
+- 약어
+  - :
+  - v-bind:href-> :href
+
+```html
+<div id="app">
+    <img v-bind:src="imageSrc">
+    <img :src="imageSrc">
+
+	<h2 :class="[activeRed, myBackground]">
+        Hello Vue.js
+    </h2>
+    
+    <ul>
+        <li v-for="todo in todos" :class="{active: todo.isActive}" style="{fontSize:fontSize+'px'}">{{todo}}</li>
+    </ul>
+</div>
+
+<script>
+	const app = new Vue({
+        el: '#app',
+        data: {
+            imageSrc: 'https://picsum.photos/200/300',
+            isRed: true,
+            activeRed: 'active',
+            myBackground: 'my-background-color',
+            todos: [
+                {id:1, title: 'todo 1', isActive:true},
+            ],
+            fontSize: 30,
+        }
+    })
+</script>
+```
+
+
+
+### v- model
+
+- HTML form 요소의 값과 data를 양방향 바인딩
+- 수식어
+  - .lazy
+    - input 대신 change이벤트 이후에 동기화
+  - .number
+    - 문자열을 숫자로 변경
+  - .trim
+    - 입력에 대한 trim을 진행
+
+```html
+<div id="app">
+    <h2>
+        1. Input > Data
+    </h2>
+    <h3>
+        {{myMessage}}
+    </h3>
+    <input @input="onInputChange" type="text">
+    <hr>
+    
+    <h2>
+        2. Input - Data  
+    </h2>
+    <h3>
+    	{{ myMessage2 }}    
+    </h3>
+    <input v-model="myMessage2" type="text">
+    <hr>
+    
+    <h2>
+        3. Checkbox
+    </h2>
+    <input type="checkbox" id="checkbox" v-model="checked">
+    <label for="checkbox">{{ checked }}</label>
+</div>
+
+<script>
+	const app = new Vew({
+        el: '#app',
+        data: {
+            myMessage:'',
+            myMessage2:'',
+            checked: true,
+        },
+        methods: {
+            onInputChange: function(event) {
+                this.myMessage = event.target.value
+            },
+        }
+        
+    })
+</script>
+```
+
+
+
+### Options/Data - 'computed'
+
+- 데이터를 기반으로 하는 계산된 속성
+- 함수의 형태로 정의하지만 함수가 아닌 함수의 반환 값이 바인딩 됨
+- 종속된 데이터에 따라 저장(캐싱) 된다
+- **종속된 데이터가 변경될 때만 함수를 실행**한다.
+- 즉, 어떤 데이터에도 의존하지 않는 computed 속성의 경우 절대로 업데이트 되지 않는다.
+- 반드시반환 값이 있어야 한다.
+
+``` html
+<div id="app">
+    <p>
+        {{num}}
+    </p>
+    <p>
+        {{doubleNum}}
+    </p>
+</div>
+<script>
+	const app = new Vue({
+        el: '#app',
+        data: {
+            num: 2,
+        },
+        computed: {
+            doubleNum: function() {
+                return this.num * 2
+            }
+        }
+    })
+</script>
+```
+
+
+
+### computed & methods
+
+- computed 속성 대신 methods에 함수를 정의할 수도 있다.
+  - 최종 결과에 대해 두 가지 접근 방식은 서로 동일하다.
+- 차이점은 computed 속성은 종속 대상을 따라 저장(캐싱)된다.
+- 즉, computed는 종속된 대상이 변경되지 않는 한 computed에 작성된 함수를 여러 번 호출해도 계산을 다시 하지 않고 계산되어 있던 결과를 반환한다.
+- 이에 비해 methods를 호출하면 렌더링을 다시 할 때마다 항상 함수를 실행한다.
+
+
+
+#### Options/Data - 'watch'
+
+- 데이터를 감시
+- 데이터에 변화가 일어났을 때 실행되는 함수
+
+```html
+<div id="app">
+    <p>
+        {{num}}
+    </p>
+    <button @click="num+=1">
+        add1
+    </button>
+</div>
+<script>
+	const app = new Vue({
+        el: "#app",
+        data: {
+            num:2,
+        },
+        watch: {
+            num : function() {
+                console.log(`${this.num}이 변경되었습니다.`)
+            }
+        }
+    })
+</script>
+```
+
+
+
+### computed & watch
+
+#### computed
+
+- 특정 데이터를 직접적으로 사용/가공하여 다른 값으로 만들 때 사용
+- 속성은 계산해야 하는 목표 데이터를 정의하는 방식으로 소프트웨어 공학에서 이야깋는 선언형 프로그래밍 방식
+- 특정 값이 변동하면 해당 값을 다시 계산해서 보여준다.
+
+#### watch
+
+- 특정 데이터의 변화상황에 맞춰 다른 data등이 바뀌어야 할 때 주로 사용
+- 감시할 데이터를 지정하고 그 데이터가 바뀌면 특정 함수를 실행하는 방식
+- 소프트웨어 공학에서 이야기하는 명령형 프로그래밍 방식
+- 특정 값이 변동하면 다른 작업을 한다.
+- 특정 대상이 변경되었을 때 콜백함수를 실행시키기 위한 트리거
+
+
+
+- computed와 watch는 어떤 것이 더 우수한 것이 아닌 사용하는 목적과 상황이 다름
+
+
+
+### 선언형 & 명령형
+
+- 선언형 프로그래밍
+  - 계산해야 하는 목표 데이터를 정의(computed)
+- 명령형 프로그래밍
+  - 데이터가 바뀌면 특정 함수를 실행(watch)
+
+
+
+### Options/Assets - 'filter'
+
+- 텍스트 형식화를 적용할 수 있는 필터
+- interpolation 혹은 v-bind를 이용할 때 사용 가능
+- 필터는 자바스크립트 표현식 마지막에 "|" (파이프)와 함께 추가되어야 한다.
+- 이어서 사용(chaining)가능
+
+``` html
+<div id="app">
+    <p>
+        {{numbers|getOddNums|getUnderTenNums}}
+    </p>
+</div>
+<script>
+	const app = new Vue({
+        el: '#app',
+        data: {
+            numbers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        },
+        filters: {
+            getOddNums: function(nums){
+                const oddNums = nums.filter(function (num) {
+                    return num%2
+                })
+            },
+            getUnderTenNums: function(nums) {
+                const underTen = nums.filter(function (num) {
+                    return num < 10
+                })
+                return underTen
+            }
+        }
+    })
+</script>
+```
 
 
 
 
 
+## 💁‍♀️ Lifecycle Hooks
 
+### Lifecycle Hooks
 
+- 각 Vue 인스턴스는 생성될 때 일련의 초기화 단계를 거친다.
 
+  - 예를 들어 데이터 관찰 설정이 필요한 경우,
+  - 인스턴스를 DOM에 마운트하는 경우,
+  - 데이터가 변경되어 DOM를 업데이트하는 경우 등
+
+- 그 과정에서 사용자 정의 로직을 실행할 수 있는 Lifecycle Hooks도 호출된다.
+
+- 공식 문서를 통해 각 라이프 사이클 훅의 상세 동작을 참고
+
+  
