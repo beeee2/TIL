@@ -115,3 +115,157 @@ class Article(models.Model):
   - 현재 활성화된 User 모델을 반환한다.
   - models.py가 아닌 다른 모든 곳에서 유저 모델을 참조할 때 사용한다.
   - 반환값이 object다.
+
+
+
+```python
+#articles/forms.py
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        exclude = ('user',)
+```
+
+- 누가 글을 썼는지에 대한 값을 전달해줘야 한다.
+
+```python
+#articles/views.py
+
+def create(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.user = request.user
+            article.save()
+            return redirect('articles:detail', article.pk)
+    else:
+        form = ArticleForm()
+    context = {
+        'form' : form
+    }
+    return render(request, 'articles/create.html', context)
+```
+
+
+
+#### 삭제
+
+- 내가 쓴 것만 삭제해보자(다른 사람이 내 게시물을 삭제하지 못하게 해보자)
+
+```python
+# articles/views.py
+
+@require_POST
+def delete(request, pk):
+    article = get_object_or404(Article, pk=pk)
+    if request.user.is_authenticated:
+        if request.user == article.user:
+            article.delete()
+    return redirect('articles:index')
+
+```
+
+
+
+#### 수정
+
+```python
+def update(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    if request.user == article.user:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, instance=article)
+            if form.is_valid():
+                article = form.save()
+                return redirect('articles:detail', article.pk)
+        else:
+            form = ArticleForm(instance = article)
+    else:
+        return redirect('articles:index')
+    context = {
+        'form' : form,
+        'article': article,
+    }
+    return render(request, 'articles/update.html', context)
+```
+
+
+
+## 🌱 User-Comment(1:N)
+
+```python
+# articles/model.py
+from django.db import models
+from django.conf import settings
+
+class Comment(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.content
+    
+```
+
+```python
+#articles/views.py
+@require_POST
+def comment_create(request, pk):
+    if request.user.is_authenticated:
+        article = get_object_or_404(Article, pk=pk)
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.article = article
+            comment.user = request.user
+            comment.save()
+        return redirect('articles:detail', article.pk)
+    return redirect('accounts:login')
+```
+
+
+
+
+
+## 🌱 병원 진료 기록 시스템
+
+- 다대다 관계(M:N 관계)
+- Django에서는 다대다(M:N, many-to-many) 관계설정 시 사용하는 모델 필드
+- 하나의 필수 위치인자(M:N 관계로 설정할 모델 클래스)가 필요하다.
+
+
+
+- **ManyToManyField** 작성 시 중개 모델 삭제된다.
+- 필드 작성 위치는 둘 중 하나 또는 모두 작성이 가능하다.
+
+```python
+# hospitals/models.py
+
+from django.db import models
+
+class Doctor(models.Model):
+    name = models.TextField()
+    
+class Patient(models.Model):
+    doctors = models.ManyToManyField(Doctor)
+	name = models.TextField()
+
+```
+
+
+
+## 🌱 Like
+
+- User : Article, M:N관계
+
+```python
+# articles/models.py
+
+class Article(models.Model):
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+```
+

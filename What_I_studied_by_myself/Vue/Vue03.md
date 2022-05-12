@@ -98,7 +98,7 @@
 
 - 중앙에서 관리하는 모든 상태 정보(data)
   - Vuex는 single state tree를 사용
-  - 즉, 이 단일 객체는 모든 애플리케이션 상태를 포함하는 "원본 소스(single source of truth)"의 역할을 한다.
+  - 즉, 이 단일 객체는 모든 애플리케이션 상태를 포함하는 "**원본** 소스(single source of truth)"의 역할을 한다.
   - 이는 각 애플리케이션마다 하나의 저장소만 갖게된다는 것을 의미한다.
 - 여러 컴포넌트 내부에 있는 특정 state를 중앙에서 관리하게 된다.
   - 이전의 방식은 state를 찾기 위해 각 컴포넌트를 직접 확인해야 했다.
@@ -138,9 +138,13 @@
 ### Getters
 
 - state를 변경하지 않고 활용하여 계산을 수행한다.(computed 속성과 유사)
-  - compute를 
-
-
+  - compute를 사용하는 것처럼 getters는 저장소의 상태(state)를 기준으로 계산
+  - 예를 들어, state에 todoList라는 해야 할 일의 목록의 경우 완료된 todo 목록만을 필터링해서 출력해야 하는 경우가 있음
+  - computed 속성과 마찬가지로 getters의 결과는 state 종속성에 따라 캐시(cached)되고, 종속성이 변경된 경우에만 다시 재계산된다.
+  - getters자체가 state를 변경하지는 않는다.
+    - state를 특정한 조건에 따라 구분(계산)만 한다.
+    - 즉, 계산된 값을 가져온다.
+    - getters에 정의하는 method들은 계산된 값을 저장하기에 반드시 return이 필요하다.
 
 
 
