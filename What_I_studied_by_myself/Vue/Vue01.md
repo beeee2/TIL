@@ -779,9 +779,48 @@ const app = new Vue({
   - 예를 들어 데이터 관찰 설정이 필요한 경우,
   - 인스턴스를 DOM에 마운트하는 경우,
   - 데이터가 변경되어 DOM를 업데이트하는 경우 등
-
 - 그 과정에서 사용자 정의 로직을 실행할 수 있는 Lifecycle Hooks도 호출된다.
-
 - 공식 문서를 통해 각 라이프 사이클 훅의 상세 동작을 참고
+
+
+
+
+#### created
+
+- created hook은 vue 인스턴스가 생성된 후에 호출된다.
+
+  ```javascript
+  new Vue({
+      data: {
+          a:1
+      },
+      created: function() {
+          console.log('a is: ' + this. a) // => 'a is : 1 '
+      }
+  })
+  ```
+
+- created를 사용해 애플리케이션의 초기 데이터를 API 요청을 통해 불러올 수 있다.
+
+  ```javascript
+  const API_URL ="이미지 주소"
+  const app = new Vue({
+      el: '#app',
+      data: {
+          imgSrc: '',
+      },
+      methods: {
+          getImg: function() {
+              axios.get(API_URL)
+              	.then(response => {
+                  this.imgsrc= response.data.message
+              })
+          }
+      },
+      created: function() {
+          this.getImg()
+      }
+  })
+  ```
 
   
